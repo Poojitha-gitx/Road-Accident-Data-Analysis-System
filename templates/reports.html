@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block title %}Reports & Exports | Road Accident Data Analysis System{% endblock %}
+
+{% block content %}
+<div class="top-header">
+  <div class="page-title-group">
+    <h2>Analytical Reports & Exports</h2>
+    <p>Generate, review, and download comprehensive statistical dossiers, raw data exports, and publication-ready charts</p>
+  </div>
+</div>
+
+<!-- Downloadable Export Cards Grid -->
+<div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); margin-bottom: 32px;">
+  <!-- Export 1: Enriched CSV Dataset -->
+  <div class="kpi-card" style="border-top: 3px solid var(--primary);">
+    <div class="kpi-top">
+      <span class="kpi-title">Structured Data Export</span>
+      <div class="kpi-icon-pill" style="color: var(--primary);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+        </svg>
+      </div>
+    </div>
+    <div style="font-size: 1.25rem; font-weight: 700;">Enriched Incident CSV</div>
+    <div class="kpi-subtext" style="margin-bottom: 12px;">
+      Complete dataset including auto-extracted temporal features (Year, Month, Hour, Day of Week, Time-of-Day classification).
+    </div>
+    <a href="{{ url_for('export_csv_report', **filters) }}" class="btn btn-primary btn-sm" style="margin-top: auto; justify-content: center;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="7 10 12 15 17 10"></polyline>
+        <line x1="12" y1="15" x2="12" y2="3"></line>
+      </svg>
+      Download Filtered CSV (.csv)
+    </a>
+  </div>
+
+  <!-- Export 2: Text/Markdown Analytical Dossier -->
+  <div class="kpi-card" style="border-top: 3px solid var(--secondary);">
+    <div class="kpi-top">
+      <span class="kpi-title">Analytical Dossier</span>
+      <div class="kpi-icon-pill" style="color: var(--secondary);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+        </svg>
+      </div>
+    </div>
+    <div style="font-size: 1.25rem; font-weight: 700;">Executive Statistical Summary</div>
+    <div class="kpi-subtext" style="margin-bottom: 12px;">
+      Formal text report featuring KPI tables, NumPy parametric metrics, vehicle shares, and ethical disclosures.
+    </div>
+    <a href="{{ url_for('export_summary_report', **filters) }}" class="btn btn-primary btn-sm" style="margin-top: auto; justify-content: center; background: linear-gradient(135deg, var(--secondary), #7c3aed);">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="7 10 12 15 17 10"></polyline>
+        <line x1="12" y1="15" x2="12" y2="3"></line>
+      </svg>
+      Download Text Summary (.txt)
+    </a>
+  </div>
+
+  <!-- Export 3: Sample Template CSV -->
+  <div class="kpi-card" style="border-top: 3px solid var(--accent-cyan);">
+    <div class="kpi-top">
+      <span class="kpi-title">Template Protocol</span>
+      <div class="kpi-icon-pill" style="color: var(--accent-cyan);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+      </div>
+    </div>
+    <div style="font-size: 1.25rem; font-weight: 700;">Sample Import CSV Template</div>
+    <div class="kpi-subtext" style="margin-bottom: 12px;">
+      Reference schema template containing valid headers and synthetic records for verifying batch upload pipelines.
+    </div>
+    <a href="{{ url_for('download_sample_csv') }}" class="btn btn-secondary btn-sm" style="margin-top: auto; justify-content: center;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="7 10 12 15 17 10"></polyline>
+        <line x1="12" y1="15" x2="12" y2="3"></line>
+      </svg>
+      Download Sample Template
+    </a>
+  </div>
+</div>
+
+<!-- High-Resolution Matplotlib Visual Chart Downloads -->
+<div class="table-card" style="padding: 24px; margin-bottom: 32px;">
+  <div style="margin-bottom: 20px;">
+    <h3 style="font-size: 1.15rem; font-weight: 600;">Download High-Resolution Matplotlib Visualizations</h3>
+    <p style="font-size: 0.85rem; color: var(--text-muted);">Vector-quality publication charts rendered at 130 DPI with anti-aliasing</p>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+    <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-subtle); padding: 16px; border-radius: var(--radius-md); display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <strong style="display: block; font-size: 0.9rem;">Yearly Severity Trend</strong>
+        <span style="font-size: 0.75rem; color: var(--text-dim);">Multi-line annual trajectory</span>
+      </div>
+      <a href="{{ url_for('serve_chart', chart_type='yearly_trend', download='true', **filters) }}" class="btn btn-secondary btn-sm">
+        Download PNG
+      </a>
+    </div>
+
+    <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-subtle); padding: 16px; border-radius: var(--radius-md); display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <strong style="display: block; font-size: 0.9rem;">Severity Ratio Donut</strong>
+        <span style="font-size: 0.75rem; color: var(--text-dim);">Proportional pie distribution</span>
+      </div>
+      <a href="{{ url_for('serve_chart', chart_type='severity_donut', download='true', **filters) }}" class="btn btn-secondary btn-sm">
+        Download PNG
+      </a>
+    </div>
+
+    <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-subtle); padding: 16px; border-radius: var(--radius-md); display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <strong style="display: block; font-size: 0.9rem;">Vehicle vs Severity</strong>
+        <span style="font-size: 0.75rem; color: var(--text-dim);">Grouped comparative bar chart</span>
+      </div>
+      <a href="{{ url_for('serve_chart', chart_type='vehicle_severity', download='true', **filters) }}" class="btn btn-secondary btn-sm">
+        Download PNG
+      </a>
+    </div>
+
+    <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-subtle); padding: 16px; border-radius: var(--radius-md); display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <strong style="display: block; font-size: 0.9rem;">24-Hour Diurnal Curve</strong>
+        <span style="font-size: 0.75rem; color: var(--text-dim);">Hourly vulnerability curve</span>
+      </div>
+      <a href="{{ url_for('serve_chart', chart_type='hourly_distribution', download='true', **filters) }}" class="btn btn-secondary btn-sm">
+        Download PNG
+      </a>
+    </div>
+
+    <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-subtle); padding: 16px; border-radius: var(--radius-md); display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <strong style="display: block; font-size: 0.9rem;">Top Regional Corridors</strong>
+        <span style="font-size: 0.75rem; color: var(--text-dim);">Ranked horizontal bars</span>
+      </div>
+      <a href="{{ url_for('serve_chart', chart_type='regional_ranking', download='true', **filters) }}" class="btn btn-secondary btn-sm">
+        Download PNG
+      </a>
+    </div>
+
+    <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-subtle); padding: 16px; border-radius: var(--radius-md); display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <strong style="display: block; font-size: 0.9rem;">Weather vs Severity</strong>
+        <span style="font-size: 0.75rem; color: var(--text-dim);">Meteorological breakdown</span>
+      </div>
+      <a href="{{ url_for('serve_chart', chart_type='weather_distribution', download='true', **filters) }}" class="btn btn-secondary btn-sm">
+        Download PNG
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Dataset Provenance, Location Granularity & Ethical Disclosures -->
+<div class="filter-card">
+  <div style="margin-bottom: 16px;">
+    <h3 style="font-size: 1.15rem; font-weight: 700; color: #ffffff;">Dataset Provenance & Research Governance</h3>
+    <p style="font-size: 0.85rem; color: var(--text-muted);">Documentation required for college project presentation and academic rigor</p>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; font-size: 0.88rem;">
+    <div style="background: rgba(15, 23, 42, 0.6); padding: 16px; border-radius: var(--radius-md); border-left: 3px solid var(--primary);">
+      <strong style="color: var(--primary); display: block; margin-bottom: 4px;">Dataset Provenance:</strong>
+      <p style="color: var(--text-muted);">
+        <strong>Synthetic Demonstration Dataset:</strong> Modelled to replicate urban arterial traffic and highway incident dynamics across years 2021 through 2026.
+      </p>
+    </div>
+
+    <div style="background: rgba(15, 23, 42, 0.6); padding: 16px; border-radius: var(--radius-md); border-left: 3px solid var(--secondary);">
+      <strong style="color: var(--secondary); display: block; margin-bottom: 4px;">Geographic Granularity:</strong>
+      <p style="color: var(--text-muted);">
+        Regional sector corridors (e.g. Downtown Metro Core, North Highway Corridor, East Tech Hub) and named arterial crossings.
+      </p>
+    </div>
+
+    <div style="background: rgba(15, 23, 42, 0.6); padding: 16px; border-radius: var(--radius-md); border-left: 3px solid var(--severity-minor);">
+      <strong style="color: var(--severity-minor); display: block; margin-bottom: 4px;">Zero PII Guarantee:</strong>
+      <p style="color: var(--text-muted);">
+        Strictly contains <strong>zero personally identifying information (PII)</strong>. No driver names, license numbers, or residential addresses are collected or stored.
+      </p>
+    </div>
+
+    <div style="background: rgba(15, 23, 42, 0.6); padding: 16px; border-radius: var(--radius-md); border-left: 3px solid var(--severity-serious);">
+      <strong style="color: var(--severity-serious); display: block; margin-bottom: 4px;">Statistical Interpretation:</strong>
+      <p style="color: var(--text-muted);">
+        Analysis demonstrates <strong>observational associations and empirical patterns</strong>, NOT direct causal relationships.
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

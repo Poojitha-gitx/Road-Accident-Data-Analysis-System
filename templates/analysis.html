@@ -1,0 +1,355 @@
+{% extends "base.html" %}
+
+{% block title %}Accident Analysis | Road Accident Data Analysis System{% endblock %}
+
+{% block content %}
+<div class="top-header">
+  <div class="page-title-group">
+    <h2>Statistical Accident Analysis</h2>
+    <p>Multi-dimensional analysis using Pandas grouping, NumPy descriptive statistics, and Matplotlib visualizations</p>
+  </div>
+  <div class="action-buttons">
+    <a href="{{ url_for('reports') }}" class="btn btn-primary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="7 10 12 15 17 10"></polyline>
+        <line x1="12" y1="15" x2="12" y2="3"></line>
+      </svg>
+      Export Summary Report
+    </a>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="filter-card">
+  <form method="GET" action="{{ url_for('accident_analysis') }}">
+    <div class="filter-header">
+      <h3>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+        </svg>
+        Filter Analytical Scope
+      </h3>
+      {% if filters.year or filters.region or filters.vehicle_type or filters.severity or filters.weather %}
+        <a href="{{ url_for('accident_analysis') }}" class="btn btn-secondary btn-sm" style="padding: 4px 10px;">Reset Scope</a>
+      {% endif %}
+    </div>
+
+    <div class="filter-grid">
+      <div class="form-group">
+        <label>Year</label>
+        <select name="year" class="form-control">
+          <option value="">All Available Years</option>
+          {% for yr in all_years %}
+            <option value="{{ yr }}" {% if filters.year == yr %}selected{% endif %}>{{ yr }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Region</label>
+        <select name="region" class="form-control">
+          <option value="">All Regions</option>
+          {% for reg in all_regions %}
+            <option value="{{ reg }}" {% if filters.region == reg %}selected{% endif %}>{{ reg }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Vehicle Type</label>
+        <select name="vehicle_type" class="form-control">
+          <option value="">All Vehicles</option>
+          {% for v in valid_vehicles %}
+            <option value="{{ v }}" {% if filters.vehicle_type == v %}selected{% endif %}>{{ v }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Severity</label>
+        <select name="severity" class="form-control">
+          <option value="">All Severities</option>
+          {% for s in valid_severities %}
+            <option value="{{ s }}" {% if filters.severity == s %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Weather</label>
+        <select name="weather" class="form-control">
+          <option value="">All Weather</option>
+          {% for w in valid_weathers %}
+            <option value="{{ w }}" {% if filters.weather == w %}selected{% endif %}>{{ w }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
+          Update Analysis
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- NumPy Descriptive Statistics Dashboard -->
+<div class="table-card" style="padding: 24px; margin-bottom: 32px; background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+    <div>
+      <h3 style="font-size: 1.15rem; color: #ffffff;">NumPy Parametric & Non-Parametric Statistics</h3>
+      <p style="font-size: 0.82rem; color: var(--text-muted);">Empirical distribution of monthly accident frequency</p>
+    </div>
+    <span class="badge" style="background: rgba(59, 130, 246, 0.2); color: #93c5fd; border: 1px solid rgba(59, 130, 246, 0.4);">
+      N = {{ stats.total_accidents }} Records
+    </span>
+  </div>
+
+  <div class="kpi-grid" style="margin-bottom: 0;">
+    <div class="kpi-card" style="background: rgba(15, 23, 42, 0.6);">
+      <span class="kpi-title">Arithmetic Mean (&mu;)</span>
+      <div class="kpi-value" style="color: var(--accent-cyan); font-size: 2rem;">{{ stats.mean_per_month }}</div>
+      <div class="kpi-subtext">Average incidents per calendar month</div>
+    </div>
+
+    <div class="kpi-card" style="background: rgba(15, 23, 42, 0.6);">
+      <span class="kpi-title">Sample Median (Q2)</span>
+      <div class="kpi-value" style="color: #a78bfa; font-size: 2rem;">{{ stats.median_per_month }}</div>
+      <div class="kpi-subtext">50th percentile monthly incident volume</div>
+    </div>
+
+    <div class="kpi-card" style="background: rgba(15, 23, 42, 0.6);">
+      <span class="kpi-title">Std Deviation (&sigma;)</span>
+      <div class="kpi-value" style="color: #f472b6; font-size: 2rem;">&plusmn;{{ stats.std_per_month }}</div>
+      <div class="kpi-subtext">Dispersion from the mean</div>
+    </div>
+
+    <div class="kpi-card" style="background: rgba(15, 23, 42, 0.6);">
+      <span class="kpi-title">Interquartile Range (IQR)</span>
+      <div class="kpi-value" style="color: #fb923c; font-size: 2rem;">{{ stats.iqr_per_month }}</div>
+      <div class="kpi-subtext">Spread of middle 50% (Q3 - Q1)</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================
+     DIMENSION 1: YEAR-WISE LONGITUDINAL ANALYSIS
+     ======================================================== -->
+<div style="margin-bottom: 36px;">
+  <div style="margin-bottom: 16px;">
+    <h3 style="font-size: 1.35rem;">1. Year-Wise Longitudinal Analysis</h3>
+    <p style="font-size: 0.85rem; color: var(--text-muted);">Annual accident volume, severity breakdown, and calculated fatality rates</p>
+  </div>
+
+  <div class="charts-grid-2">
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3>Annual Severity Trajectory</h3>
+        <a href="{{ url_for('serve_chart', chart_type='yearly_trend', download='true', **filters) }}" class="btn btn-secondary btn-sm">PNG</a>
+      </div>
+      <div class="chart-container">
+        <img src="{{ url_for('serve_chart', chart_type='yearly_trend', **filters) }}" alt="Yearly Trend Chart" loading="lazy">
+      </div>
+    </div>
+
+    <div class="table-card" style="margin-bottom: 0;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Year</th>
+            <th>Minor</th>
+            <th>Serious</th>
+            <th>Fatal</th>
+            <th>Total</th>
+            <th>Fatality Rate</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if details.yearly %}
+            {% for y in details.yearly %}
+              <tr>
+                <td><strong>{{ y.year }}</strong></td>
+                <td><span style="color: var(--severity-minor);">{{ y.Minor }}</span></td>
+                <td><span style="color: var(--severity-serious);">{{ y.Serious }}</span></td>
+                <td><span style="color: var(--severity-fatal); font-weight: 700;">{{ y.Fatal }}</span></td>
+                <td><strong>{{ y.Total }}</strong></td>
+                <td>
+                  <span class="badge {% if y.Fatality_Rate_Pct > 15 %}badge-fatal{% else %}badge-minor{% endif %}">
+                    {{ y.Fatality_Rate_Pct }}%
+                  </span>
+                </td>
+              </tr>
+            {% endfor %}
+          {% else %}
+            <tr><td colspan="6" style="text-align: center; color: var(--text-dim);">No data for selected filters.</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================
+     DIMENSION 2: LOCATION-WISE GEOGRAPHICAL ANALYSIS
+     ======================================================== -->
+<div style="margin-bottom: 36px;">
+  <div style="margin-bottom: 16px;">
+    <h3 style="font-size: 1.35rem;">2. Location-Wise Corridor Risk Analysis</h3>
+    <p style="font-size: 0.85rem; color: var(--text-muted);">Ranking regional arterial corridors by accident frequency and injury severity</p>
+  </div>
+
+  <div class="charts-grid-2">
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3>Top Geographical High-Risk Corridors</h3>
+        <a href="{{ url_for('serve_chart', chart_type='regional_ranking', download='true', **filters) }}" class="btn btn-secondary btn-sm">PNG</a>
+      </div>
+      <div class="chart-container">
+        <img src="{{ url_for('serve_chart', chart_type='regional_ranking', **filters) }}" alt="Regional Ranking Chart" loading="lazy">
+      </div>
+    </div>
+
+    <div class="table-card" style="margin-bottom: 0;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Region / Corridor</th>
+            <th>Minor</th>
+            <th>Serious</th>
+            <th>Fatal</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if details.locations %}
+            {% for loc in details.locations %}
+              <tr>
+                <td><strong>{{ loc.region }}</strong></td>
+                <td><span style="color: var(--severity-minor);">{{ loc.Minor }}</span></td>
+                <td><span style="color: var(--severity-serious);">{{ loc.Serious }}</span></td>
+                <td><span style="color: var(--severity-fatal); font-weight: 700;">{{ loc.Fatal }}</span></td>
+                <td><strong>{{ loc.Total }}</strong></td>
+              </tr>
+            {% endfor %}
+          {% else %}
+            <tr><td colspan="5" style="text-align: center; color: var(--text-dim);">No location records found.</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================
+     DIMENSION 3: VEHICLE-WISE RISK CLASSIFICATION
+     ======================================================== -->
+<div style="margin-bottom: 36px;">
+  <div style="margin-bottom: 16px;">
+    <h3 style="font-size: 1.35rem;">3. Vehicle Classification & Vulnerability Analysis</h3>
+    <p style="font-size: 0.85rem; color: var(--text-muted);">Evaluating vehicle types (Bike, Car, Bus, Truck, Auto, Other) against incident severity</p>
+  </div>
+
+  <div class="charts-grid-2">
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3>Vehicle Type vs Severity Breakdown</h3>
+        <a href="{{ url_for('serve_chart', chart_type='vehicle_severity', download='true', **filters) }}" class="btn btn-secondary btn-sm">PNG</a>
+      </div>
+      <div class="chart-container">
+        <img src="{{ url_for('serve_chart', chart_type='vehicle_severity', **filters) }}" alt="Vehicle Severity Chart" loading="lazy">
+      </div>
+    </div>
+
+    <div class="table-card" style="margin-bottom: 0;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Vehicle Category</th>
+            <th>Minor</th>
+            <th>Serious</th>
+            <th>Fatal</th>
+            <th>Total</th>
+            <th>Dataset Share</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if details.vehicles %}
+            {% for v in details.vehicles %}
+              <tr>
+                <td><span class="badge badge-vehicle">{{ v.vehicle_type }}</span></td>
+                <td><span style="color: var(--severity-minor);">{{ v.Minor }}</span></td>
+                <td><span style="color: var(--severity-serious);">{{ v.Serious }}</span></td>
+                <td><span style="color: var(--severity-fatal); font-weight: 700;">{{ v.Fatal }}</span></td>
+                <td><strong>{{ v.Total }}</strong></td>
+                <td><strong style="color: #93c5fd;">{{ v.Pct_Of_Total }}%</strong></td>
+              </tr>
+            {% endfor %}
+          {% else %}
+            <tr><td colspan="6" style="text-align: center; color: var(--text-dim);">No vehicle data available.</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================
+     DIMENSION 4 & 5: TIME-WISE & WEATHER CONDITIONS
+     ======================================================== -->
+<div style="margin-bottom: 36px;">
+  <div style="margin-bottom: 16px;">
+    <h3 style="font-size: 1.35rem;">4. Diurnal (Time-Wise) & Weather Impact Analysis</h3>
+    <p style="font-size: 0.85rem; color: var(--text-muted);">Diurnal risk categorizations and meteorological conditions</p>
+  </div>
+
+  <div class="charts-grid-2">
+    <!-- Weather Distribution Chart -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3>Weather Conditions vs Severity</h3>
+        <a href="{{ url_for('serve_chart', chart_type='weather_distribution', download='true', **filters) }}" class="btn btn-secondary btn-sm">PNG</a>
+      </div>
+      <div class="chart-container">
+        <img src="{{ url_for('serve_chart', chart_type='weather_distribution', **filters) }}" alt="Weather Chart" loading="lazy">
+      </div>
+    </div>
+
+    <!-- Time of Day Table -->
+    <div class="table-card" style="margin-bottom: 0;">
+      <div style="padding: 16px 20px; border-bottom: 1px solid var(--border-subtle);">
+        <h4 style="font-size: 0.95rem;">Diurnal Time Intervals</h4>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Time Period</th>
+            <th>Minor</th>
+            <th>Serious</th>
+            <th>Fatal</th>
+            <th>Total</th>
+            <th>Share</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if details.time_of_day %}
+            {% for t in details.time_of_day %}
+              <tr>
+                <td><strong>{{ t.time_of_day }}</strong></td>
+                <td><span style="color: var(--severity-minor);">{{ t.Minor|int }}</span></td>
+                <td><span style="color: var(--severity-serious);">{{ t.Serious|int }}</span></td>
+                <td><span style="color: var(--severity-fatal); font-weight: 700;">{{ t.Fatal|int }}</span></td>
+                <td><strong>{{ t.Total|int }}</strong></td>
+                <td><span class="badge badge-vehicle">{{ t.Pct_Of_Total }}%</span></td>
+              </tr>
+            {% endfor %}
+          {% else %}
+            <tr><td colspan="6" style="text-align: center; color: var(--text-dim);">No time data available.</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

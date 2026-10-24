@@ -1,0 +1,280 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | Road Accident Data Analysis System{% endblock %}
+
+{% block content %}
+<div class="top-header">
+  <div class="page-title-group">
+    <h2>Analytical Dashboard</h2>
+    <p>Macro incident surveillance, severity metrics, and temporal risk profiles</p>
+  </div>
+  <div class="action-buttons">
+    <a href="{{ url_for('records') }}" class="btn btn-secondary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+        <line x1="16" y1="13" x2="8" y2="13"></line>
+        <line x1="16" y1="17" x2="8" y2="17"></line>
+      </svg>
+      Browse Records
+    </a>
+    <a href="{{ url_for('reports') }}" class="btn btn-primary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="7 10 12 15 17 10"></polyline>
+        <line x1="12" y1="15" x2="12" y2="3"></line>
+      </svg>
+      Generate Report
+    </a>
+  </div>
+</div>
+
+<!-- Global Filter Toolbar -->
+<div class="filter-card">
+  <form method="GET" action="{{ url_for('dashboard') }}">
+    <div class="filter-header">
+      <h3>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+        </svg>
+        Multi-Dimensional Incident Filters
+      </h3>
+      {% if filters.year or filters.region or filters.vehicle_type or filters.severity or filters.weather %}
+        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-sm" style="padding: 4px 10px;">Clear Filters</a>
+      {% endif %}
+    </div>
+    
+    <div class="filter-grid">
+      <div class="form-group">
+        <label>Year</label>
+        <select name="year" class="form-control">
+          <option value="">All Available Years</option>
+          {% for yr in all_years %}
+            <option value="{{ yr }}" {% if filters.year == yr %}selected{% endif %}>{{ yr }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Location Region</label>
+        <select name="region" class="form-control">
+          <option value="">All Geographical Regions</option>
+          {% for reg in all_regions %}
+            <option value="{{ reg }}" {% if filters.region == reg %}selected{% endif %}>{{ reg }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Vehicle Type</label>
+        <select name="vehicle_type" class="form-control">
+          <option value="">All Vehicle Categories</option>
+          {% for v in valid_vehicles %}
+            <option value="{{ v }}" {% if filters.vehicle_type == v %}selected{% endif %}>{{ v }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Severity Level</label>
+        <select name="severity" class="form-control">
+          <option value="">All Severities</option>
+          {% for s in valid_severities %}
+            <option value="{{ s }}" {% if filters.severity == s %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Weather Condition</label>
+        <select name="weather" class="form-control">
+          <option value="">All Weather Conditions</option>
+          {% for w in valid_weathers %}
+            <option value="{{ w }}" {% if filters.weather == w %}selected{% endif %}>{{ w }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
+          Apply Filters
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- KPI Metric Cards Grid -->
+<div class="kpi-grid">
+  <!-- Total Incidents -->
+  <div class="kpi-card">
+    <div class="kpi-top">
+      <span class="kpi-title">Total Incidents</span>
+      <div class="kpi-icon-pill" style="color: var(--primary);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+      </div>
+    </div>
+    <div class="kpi-value">{{ stats.total_accidents }}</div>
+    <div class="kpi-subtext">Active database records matching filter</div>
+  </div>
+
+  <!-- Minor Incidents -->
+  <div class="kpi-card minor">
+    <div class="kpi-top">
+      <span class="kpi-title">Minor Accidents</span>
+      <div class="kpi-icon-pill" style="color: var(--severity-minor);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+      </div>
+    </div>
+    <div class="kpi-value" style="color: var(--severity-minor);">{{ stats.minor_count }}</div>
+    <div class="kpi-subtext">
+      <strong>{{ stats.minor_pct }}%</strong> of total volume (Low injury severity)
+    </div>
+  </div>
+
+  <!-- Serious Incidents -->
+  <div class="kpi-card serious">
+    <div class="kpi-top">
+      <span class="kpi-title">Serious Accidents</span>
+      <div class="kpi-icon-pill" style="color: var(--severity-serious);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+    </div>
+    <div class="kpi-value" style="color: var(--severity-serious);">{{ stats.serious_count }}</div>
+    <div class="kpi-subtext">
+      <strong>{{ stats.serious_pct }}%</strong> of total volume (Hospitalization)
+    </div>
+  </div>
+
+  <!-- Fatal Incidents -->
+  <div class="kpi-card fatal">
+    <div class="kpi-top">
+      <span class="kpi-title">Fatal Accidents</span>
+      <div class="kpi-icon-pill" style="color: var(--severity-fatal);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="15" y1="9" x2="9" y2="15"></line>
+          <line x1="9" y1="9" x2="15" y2="15"></line>
+        </svg>
+      </div>
+    </div>
+    <div class="kpi-value" style="color: var(--severity-fatal);">{{ stats.fatal_count }}</div>
+    <div class="kpi-subtext">
+      <strong>{{ stats.fatal_pct }}%</strong> mortality proportion
+    </div>
+  </div>
+</div>
+
+<!-- Secondary Statistics Grid (NumPy & Pandas Aggregates) -->
+<div class="kpi-grid" style="margin-bottom: 32px;">
+  <div class="kpi-card">
+    <div class="kpi-top">
+      <span class="kpi-title">Monthly Mean (NumPy μ)</span>
+    </div>
+    <div class="kpi-value" style="font-size: 1.8rem; color: var(--accent-cyan);">{{ stats.mean_per_month }}</div>
+    <div class="kpi-subtext">Std Dev: ±{{ stats.std_per_month }} | IQR: {{ stats.iqr_per_month }}</div>
+  </div>
+
+  <div class="kpi-card">
+    <div class="kpi-top">
+      <span class="kpi-title">Peak Risk Corridor</span>
+    </div>
+    <div class="kpi-value" style="font-size: 1.35rem; font-weight: 600; color: #a5b4fc; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
+      {{ stats.peak_risk_region }}
+    </div>
+    <div class="kpi-subtext">Geographical mode across filtered set</div>
+  </div>
+
+  <div class="kpi-card">
+    <div class="kpi-top">
+      <span class="kpi-title">Highest Involved Vehicle</span>
+    </div>
+    <div class="kpi-value" style="font-size: 1.8rem; color: #f472b6;">{{ stats.most_common_vehicle }}</div>
+    <div class="kpi-subtext">Dominant vehicle classification</div>
+  </div>
+
+  <div class="kpi-card">
+    <div class="kpi-top">
+      <span class="kpi-title">Peak Diurnal Window</span>
+    </div>
+    <div class="kpi-value" style="font-size: 1.8rem; color: #38bdf8;">{{ stats.peak_risk_hour }}</div>
+    <div class="kpi-subtext">Hour with highest recorded incidents</div>
+  </div>
+</div>
+
+<!-- Matplotlib Visualizations Grid -->
+<div class="charts-grid-2">
+  <!-- Chart 1: Yearly & Severity Trends -->
+  <div class="chart-card">
+    <div class="chart-header">
+      <div>
+        <h3>Longitudinal Severity Progression</h3>
+        <p>Annual trendlines categorized by incident injury severity</p>
+      </div>
+      <a href="{{ url_for('serve_chart', chart_type='yearly_trend', download='true', **filters) }}" class="btn btn-secondary btn-sm" title="Download High-Res PNG">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        PNG
+      </a>
+    </div>
+    <div class="chart-container">
+      <img src="{{ url_for('serve_chart', chart_type='yearly_trend', **filters) }}" alt="Yearly Accident Trend Chart" loading="lazy">
+    </div>
+  </div>
+
+  <!-- Chart 2: Severity Proportion Donut -->
+  <div class="chart-card">
+    <div class="chart-header">
+      <div>
+        <h3>Severity Composition Ratio</h3>
+        <p>Proportional breakdown of minor vs serious vs fatal events</p>
+      </div>
+      <a href="{{ url_for('serve_chart', chart_type='severity_donut', download='true', **filters) }}" class="btn btn-secondary btn-sm" title="Download High-Res PNG">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        PNG
+      </a>
+    </div>
+    <div class="chart-container">
+      <img src="{{ url_for('serve_chart', chart_type='severity_donut', **filters) }}" alt="Severity Donut Chart" loading="lazy">
+    </div>
+  </div>
+</div>
+
+<!-- Diurnal Risk Profile Chart -->
+<div class="chart-card" style="margin-bottom: 32px;">
+  <div class="chart-header">
+    <div>
+      <h3>24-Hour Diurnal Accident Curve</h3>
+      <p>Hourly density distribution highlighting commuter rush hours and nocturnal vulnerability</p>
+    </div>
+    <a href="{{ url_for('serve_chart', chart_type='hourly_distribution', download='true', **filters) }}" class="btn btn-secondary btn-sm" title="Download High-Res PNG">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="7 10 12 15 17 10"></polyline>
+        <line x1="12" y1="15" x2="12" y2="3"></line>
+      </svg>
+      PNG
+    </a>
+  </div>
+  <div class="chart-container">
+    <img src="{{ url_for('serve_chart', chart_type='hourly_distribution', **filters) }}" alt="Hourly Distribution Chart" loading="lazy">
+  </div>
+</div>
+{% endblock %}

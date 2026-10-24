@@ -1,0 +1,424 @@
+{% extends "base.html" %}
+
+{% block title %}Accident Records | Road Accident Data Analysis System{% endblock %}
+
+{% block content %}
+<div class="top-header">
+  <div class="page-title-group">
+    <h2>Accident Surveillance Records</h2>
+    <p>Complete lifecycle management: Create, Read, Update, Delete, and Batch CSV Ingestion</p>
+  </div>
+  <div class="action-buttons">
+    <button type="button" class="btn btn-secondary" data-modal-target="importCsvModal">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="17 8 12 3 7 8"></polyline>
+        <line x1="12" y1="3" x2="12" y2="15"></line>
+      </svg>
+      Import CSV
+    </button>
+    <button type="button" class="btn btn-primary" data-modal-target="addRecordModal">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+      Add Accident Record
+    </button>
+  </div>
+</div>
+
+<!-- Filter & Search Toolbar -->
+<div class="filter-card">
+  <form method="GET" action="{{ url_for('records') }}" id="searchFilterForm">
+    <div class="filter-header">
+      <h3>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        Filter & Search Records
+      </h3>
+      {% if filters.search or filters.year or filters.region or filters.vehicle_type or filters.severity or filters.weather %}
+        <a href="{{ url_for('records') }}" class="btn btn-secondary btn-sm" style="padding: 4px 10px;" id="headerResetBtn">Reset Filters</a>
+      {% endif %}
+    </div>
+
+    <div class="filter-grid" style="grid-template-columns: 2fr repeat(auto-fit, minmax(130px, 1fr)) auto;">
+      <div class="form-group">
+        <label>Search Accident Records</label>
+        <input type="text" name="search" id="searchInput" class="form-control" placeholder="Search location, year, vehicle, severity..." value="{{ filters.search }}">
+      </div>
+
+      <div class="form-group">
+        <label>Year</label>
+        <select name="year" id="filterYear" class="form-control">
+          <option value="">All Years</option>
+          {% for yr in all_years %}
+            <option value="{{ yr }}" {% if filters.year == yr %}selected{% endif %}>{{ yr }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Region</label>
+        <select name="region" id="filterRegion" class="form-control">
+          <option value="">All Regions</option>
+          {% for reg in all_regions %}
+            <option value="{{ reg }}" {% if filters.region == reg %}selected{% endif %}>{{ reg }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Vehicle</label>
+        <select name="vehicle_type" id="filterVehicle" class="form-control">
+          <option value="">All Vehicles</option>
+          {% for v in valid_vehicles %}
+            <option value="{{ v }}" {% if filters.vehicle_type == v %}selected{% endif %}>{{ v }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Severity</label>
+        <select name="severity" id="filterSeverity" class="form-control">
+          <option value="">All Severities</option>
+          {% for s in valid_severities %}
+            <option value="{{ s }}" {% if filters.severity == s %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group" style="display: flex; gap: 8px;">
+        <button type="submit" class="btn btn-primary" id="searchBtn" style="flex: 1; justify-content: center;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          Search
+        </button>
+        <a href="{{ url_for('records') }}" class="btn btn-secondary" id="resetBtn" style="justify-content: center; padding: 9px 14px;" title="Reset all search filters">
+          Reset Filters
+        </a>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- Table Card -->
+<div class="table-card">
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Date & Time</th>
+          <th>Year</th>
+          <th>Geographic Region</th>
+          <th>Road / Arterial Name</th>
+          <th>Vehicle Type</th>
+          <th>Severity Level</th>
+          <th>Weather</th>
+          <th style="text-align: right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if data.records %}
+          {% for r in data.records %}
+            <tr>
+              <td><span style="font-family: 'JetBrains Mono', monospace; color: var(--text-dim); font-size: 0.8rem;">#{{ r.accident_id }}</span></td>
+              <td><strong>{{ r.accident_datetime_str }}</strong></td>
+              <td><span style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;">{{ r.accident_year }}</span></td>
+              <td>{{ r.region }}</td>
+              <td>{{ r.road_name or '—' }}</td>
+              <td><span class="badge badge-vehicle">{{ r.vehicle_type }}</span></td>
+              <td>
+                {% if r.severity == 'Minor' %}
+                  <span class="badge badge-minor">Minor</span>
+                {% elif r.severity == 'Serious' %}
+                  <span class="badge badge-serious">Serious</span>
+                {% elif r.severity == 'Fatal' %}
+                  <span class="badge badge-fatal">Fatal</span>
+                {% else %}
+                  <span class="badge">{{ r.severity }}</span>
+                {% endif %}
+              </td>
+              <td><span class="badge badge-weather">{{ r.weather }}</span></td>
+              <td style="text-align: right; white-space: nowrap;">
+                <button type="button" class="btn btn-secondary btn-sm btn-edit-record" data-id="{{ r.accident_id }}" title="Edit Record">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 20h9"></path>
+                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                  </svg>
+                  Edit
+                </button>
+                <button type="button" class="btn btn-danger btn-sm btn-delete-record" data-id="{{ r.accident_id }}" data-region="{{ r.region }}" data-dt="{{ r.accident_datetime_str }}" title="Delete Record">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                </button>
+              </td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="9" style="text-align: center; padding: 48px 24px; color: var(--text-muted);">
+              <div style="max-width: 440px; margin: 0 auto;">
+                <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 12px; color: var(--severity-serious);">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  <line x1="8" y1="11" x2="14" y2="11"></line>
+                </svg>
+                <h3 style="font-size: 1.2rem; color: var(--text-main); margin-bottom: 6px;">No matching records found</h3>
+                <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 16px;">
+                  {% if filters.search or filters.year or filters.region or filters.vehicle_type or filters.severity or filters.weather %}
+                    No accident records matched your current search filters. Try adjusting your search query or reset the filters.
+                  {% else %}
+                    No accident records currently exist in the database.
+                  {% endif %}
+                </p>
+                {% if filters.search or filters.year or filters.region or filters.vehicle_type or filters.severity or filters.weather %}
+                  <a href="{{ url_for('records') }}" class="btn btn-primary btn-sm">
+                    Reset Filters
+                  </a>
+                {% else %}
+                  <form method="POST" action="{{ url_for('seed_demo') }}">
+                    <button type="submit" class="btn btn-primary btn-sm">Seed Demonstration Data</button>
+                  </form>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination Bar -->
+  <div class="pagination-bar">
+    <div>
+      Showing <strong>{{ data.records|length }}</strong> of <strong>{{ data.total_count }}</strong> total records (Page {{ data.page }} of {{ data.total_pages }})
+    </div>
+    <div class="pagination-controls">
+      {% if data.page > 1 %}
+        <a href="{{ url_for('records', page=data.page-1, search=filters.search, year=filters.year, region=filters.region, vehicle_type=filters.vehicle_type, severity=filters.severity, weather=filters.weather) }}" class="page-btn">
+          &laquo; Previous
+        </a>
+      {% else %}
+        <button class="page-btn" disabled>&laquo; Previous</button>
+      {% endif %}
+
+      <span class="page-btn active">{{ data.page }}</span>
+
+      {% if data.page < data.total_pages %}
+        <a href="{{ url_for('records', page=data.page+1, search=filters.search, year=filters.year, region=filters.region, vehicle_type=filters.vehicle_type, severity=filters.severity, weather=filters.weather) }}" class="page-btn">
+          Next &raquo;
+        </a>
+      {% else %}
+        <button class="page-btn" disabled>Next &raquo;</button>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================
+     MODALS
+     ======================================================== -->
+
+<!-- 1. Add Accident Record Modal -->
+<div class="modal-backdrop" id="addRecordModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>Add New Accident Incident</h3>
+      <button type="button" class="modal-close">&times;</button>
+    </div>
+    <form method="POST" action="{{ url_for('add_record') }}" id="addRecordForm">
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Geographic Region *</label>
+          <input type="text" name="region" id="add_region" class="form-control" placeholder="e.g. Downtown Metro Core, North Highway Corridor" required>
+        </div>
+
+        <div class="form-group">
+          <label>Road / Arterial Name (Optional)</label>
+          <input type="text" name="road_name" id="add_road_name" class="form-control" placeholder="e.g. Outer Ring Road Sector 7, Main Avenue">
+        </div>
+
+        <div class="form-group">
+          <label>Accident Date & Time * (Year auto-extracted)</label>
+          <input type="datetime-local" name="accident_datetime" id="add_accident_datetime" class="form-control" required>
+        </div>
+
+        <div class="filter-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 0;">
+          <div class="form-group">
+            <label>Vehicle Type *</label>
+            <select name="vehicle_type" id="add_vehicle_type" class="form-control" required>
+              {% for v in valid_vehicles %}
+                <option value="{{ v }}">{{ v }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Severity Level *</label>
+            <select name="severity" id="add_severity" class="form-control" required>
+              {% for s in valid_severities %}
+                <option value="{{ s }}">{{ s }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Weather Condition</label>
+          <select name="weather" id="add_weather" class="form-control">
+            {% for w in valid_weathers %}
+              <option value="{{ w }}">{{ w }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-modal-close>Cancel</button>
+        <button type="submit" class="btn btn-primary" id="saveRecordBtn">Save Accident Record</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 2. Edit Accident Record Modal -->
+<div class="modal-backdrop" id="editRecordModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>Edit Incident <span id="edit_accident_id_label" style="color: var(--primary);"></span></h3>
+      <button type="button" class="modal-close">&times;</button>
+    </div>
+    <form method="POST" id="editRecordForm" action="">
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Geographic Region *</label>
+          <input type="text" name="region" id="edit_region" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label>Road / Arterial Name (Optional)</label>
+          <input type="text" name="road_name" id="edit_road_name" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label>Accident Date & Time *</label>
+          <input type="datetime-local" name="accident_datetime" id="edit_accident_datetime" class="form-control" required>
+        </div>
+
+        <div class="filter-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 0;">
+          <div class="form-group">
+            <label>Vehicle Type *</label>
+            <select name="vehicle_type" id="edit_vehicle_type" class="form-control" required>
+              {% for v in valid_vehicles %}
+                <option value="{{ v }}">{{ v }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Severity Level *</label>
+            <select name="severity" id="edit_severity" class="form-control" required>
+              {% for s in valid_severities %}
+                <option value="{{ s }}">{{ s }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Weather Condition</label>
+          <select name="weather" id="edit_weather" class="form-control">
+            {% for w in valid_weathers %}
+              <option value="{{ w }}">{{ w }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-modal-close>Cancel</button>
+        <button type="submit" class="btn btn-primary">Update Record</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 3. Delete Record Confirmation Modal -->
+<div class="modal-backdrop" id="deleteRecordModal">
+  <div class="modal-box" style="max-width: 440px;">
+    <div class="modal-header">
+      <h3 style="color: #ef4444;">Confirm Incident Deletion</h3>
+      <button type="button" class="modal-close">&times;</button>
+    </div>
+    <form method="POST" id="deleteRecordForm" action="">
+      <div class="modal-body">
+        <p>Are you sure you wish to permanently delete this accident record?</p>
+        <p style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.85rem;" id="delete_record_summary">
+        </p>
+        <p style="font-size: 0.8rem; color: var(--text-dim);">This action cannot be undone.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-modal-close>Cancel</button>
+        <button type="submit" class="btn btn-danger">Confirm Delete</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 4. CSV Import Modal -->
+<div class="modal-backdrop" id="importCsvModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>Batch CSV Data Ingestion</h3>
+      <button type="button" class="modal-close">&times;</button>
+    </div>
+    <form method="POST" action="{{ url_for('import_csv') }}" enctype="multipart/form-data">
+      <div class="modal-body">
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+          Upload a structured CSV file. The system will strictly validate each record, insert new geographical locations, and report any invalid rows or schema violations.
+        </p>
+
+        <div style="background: rgba(255, 255, 255, 0.03); border: 1px dashed var(--border-subtle); border-radius: var(--radius-md); padding: 24px; text-align: center; cursor: pointer; position: relative;">
+          <input type="file" name="csv_file" id="csv_file_input" accept=".csv" required style="position: absolute; top:0; left:0; width:100%; height:100%; opacity:0; cursor:pointer;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--primary); margin-bottom: 8px;">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          <div id="csv_file_name_display" style="font-size: 0.88rem; font-weight: 600;">
+            Click to browse or drop CSV here
+          </div>
+          <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 4px;">Supported: standard UTF-8 .csv files</div>
+        </div>
+
+        <div style="background: rgba(17, 24, 39, 0.5); border: 1px solid var(--border-subtle); padding: 12px 14px; border-radius: var(--radius-sm); font-size: 0.78rem;">
+          <strong style="color: var(--text-main);">Required CSV Columns:</strong>
+          <code style="display: block; margin-top: 4px; color: var(--accent-cyan); font-family: 'JetBrains Mono', monospace;">
+            region, road_name, accident_datetime, vehicle_type, severity, weather
+          </code>
+        </div>
+
+        <div style="text-align: right;">
+          <a href="{{ url_for('download_sample_csv') }}" class="btn btn-secondary btn-sm" style="font-size: 0.78rem;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Download Sample CSV Template
+          </a>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-modal-close>Cancel</button>
+        <button type="submit" class="btn btn-primary">Start Ingestion</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
