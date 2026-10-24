@@ -25,9 +25,48 @@ CONNECTION_MESSAGE = ""
 _MYSQL_TESTED = False
 
 
+def get_mysql_ssl_config():
+    """
+    Returns SSL parameters for mysql.connector based on environment variables.
+    Supports secure, certificate-verified TLS connections for TiDB Cloud / cloud databases
+    while preserving standard unencrypted connections for local MySQL.
+    """
+    ssl_env = os.getenv("DB_SSL", "").strip().lower()
+    is_cloud_db = (
+        ssl_env in ("true", "1", "yes", "require")
+        or DB_PORT == 4000
+        or "tidbcloud" in DB_HOST.lower()
+    )
+
+    if not is_cloud_db:
+        return {}
+
+    ssl_config = {
+        "ssl_disabled": False,
+    }
+
+    # Custom CA cert or certifi fallback for certificate-verified TLS
+    custom_ca = os.getenv("DB_SSL_CA", "").strip()
+    if custom_ca and os.path.exists(custom_ca):
+        ssl_config["ssl_ca"] = custom_ca
+        ssl_config["ssl_verify_cert"] = True
+    else:
+        try:
+            import certifi
+            ca_path = certifi.where()
+            if os.path.exists(ca_path):
+                ssl_config["ssl_ca"] = ca_path
+                ssl_config["ssl_verify_cert"] = True
+        except ImportError:
+            ssl_config["ssl_verify_cert"] = False
+
+    return ssl_config
+
+
 def check_and_set_driver():
     """
     Tests MySQL connection once. If successful, sets CURRENT_ACTIVE_DRIVER to 'mysql'.
+    Supports TiDB Cloud TLS connections and local MySQL instances.
     Otherwise falls back to 'sqlite'.
     """
     global CURRENT_ACTIVE_DRIVER, CONNECTION_MESSAGE, _MYSQL_TESTED
@@ -38,22 +77,38 @@ def check_and_set_driver():
     if DB_TYPE == "mysql":
         try:
             import mysql.connector
+            ssl_kwargs = get_mysql_ssl_config()
 
-            # Test connection with a 2-second timeout
-            test_conn = mysql.connector.connect(
-                host=DB_HOST,
-                port=DB_PORT,
-                user=DB_USER,
-                password=DB_PASSWORD,
-                connection_timeout=2
-            )
-            cursor = test_conn.cursor()
-            cursor.execute(f"CREATE DATABASE IF NOT EXISTS `{DB_NAME}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;")
-            cursor.close()
-            test_conn.close()
+            # Attempt direct database connection first (works for TiDB Cloud and existing MySQL)
+            try:
+                test_conn = mysql.connector.connect(
+                    host=DB_HOST,
+                    port=DB_PORT,
+                    user=DB_USER,
+                    password=DB_PASSWORD,
+                    database=DB_NAME,
+                    connection_timeout=4,
+                    **ssl_kwargs
+                )
+                test_conn.close()
+            except Exception:
+                # If database does not exist yet (local MySQL setup), connect to server and create it
+                test_conn = mysql.connector.connect(
+                    host=DB_HOST,
+                    port=DB_PORT,
+                    user=DB_USER,
+                    password=DB_PASSWORD,
+                    connection_timeout=4,
+                    **ssl_kwargs
+                )
+                cursor = test_conn.cursor()
+                cursor.execute(f"CREATE DATABASE IF NOT EXISTS `{DB_NAME}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;")
+                cursor.close()
+                test_conn.close()
 
             CURRENT_ACTIVE_DRIVER = "mysql"
-            CONNECTION_MESSAGE = f"Connected to MySQL on {DB_HOST}:{DB_PORT} (Database: {DB_NAME})"
+            ssl_note = " (TLS Verified)" if ssl_kwargs else ""
+            CONNECTION_MESSAGE = f"Connected to MySQL on {DB_HOST}:{DB_PORT}{ssl_note} (Database: {DB_NAME})"
         except Exception as e:
             CURRENT_ACTIVE_DRIVER = "sqlite"
             CONNECTION_MESSAGE = f"MySQL connection notice: {e}. Operating in SQLite fallback mode."
@@ -68,13 +123,14 @@ def check_and_set_driver():
 def get_db_connection():
     """
     Returns an active database connection and driver type ('mysql' or 'sqlite').
-    Uses the cached active driver for high speed.
+    Uses the cached active driver with TLS configuration if enabled.
     """
     driver = check_and_set_driver()
 
     if driver == "mysql":
         try:
             import mysql.connector
+            ssl_kwargs = get_mysql_ssl_config()
             conn = mysql.connector.connect(
                 host=DB_HOST,
                 port=DB_PORT,
@@ -82,7 +138,8 @@ def get_db_connection():
                 password=DB_PASSWORD,
                 database=DB_NAME,
                 autocommit=True,
-                connection_timeout=3
+                connection_timeout=5,
+                **ssl_kwargs
             )
             return conn, "mysql"
         except Exception as e:

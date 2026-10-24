@@ -20,6 +20,8 @@ load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "road_accident_mini_project_secret_key_2026")
+# Disable debug mode by default in production; enable only if FLASK_DEBUG is explicitly set to 'True' or '1'
+app.config["DEBUG"] = os.getenv("FLASK_DEBUG", "False").lower() in ("true", "1", "yes")
 
 # Valid enumerated domain values
 VALID_VEHICLES = ["Bike", "Car", "Bus", "Truck", "Auto", "Other"]
@@ -430,6 +432,6 @@ def download_sample_csv():
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
-    debug = os.getenv("FLASK_DEBUG", "True").lower() == "true"
-    print(f"Starting Road Accident Data Analysis System on http://localhost:{port}")
+    debug = app.config.get("DEBUG", False)
+    print(f"Starting Road Accident Data Analysis System on http://localhost:{port} (Debug: {debug})")
     app.run(host="0.0.0.0", port=port, debug=debug)
