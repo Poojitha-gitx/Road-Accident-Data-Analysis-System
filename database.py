@@ -11,12 +11,21 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Database Config from Environment Variables
+use_tidb = (os.getenv("USE_TIDB", "").lower() in ("true", "1", "yes")) or (bool(os.getenv("RENDER")) and bool(os.getenv("TIDB_HOST")))
+
 DB_TYPE = os.getenv("DB_TYPE", "mysql").lower()
-DB_HOST = os.getenv("DB_HOST", "localhost")
-DB_PORT = int(os.getenv("DB_PORT", 3306))
-DB_USER = os.getenv("DB_USER", "root")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "")
-DB_NAME = os.getenv("DB_NAME", "accident_analysis_db")
+if use_tidb and os.getenv("TIDB_HOST"):
+    DB_HOST = os.getenv("TIDB_HOST")
+    DB_PORT = int(os.getenv("TIDB_PORT", 4000))
+    DB_USER = os.getenv("TIDB_USER", "root")
+    DB_PASSWORD = os.getenv("TIDB_PASSWORD", "")
+    DB_NAME = os.getenv("TIDB_DATABASE") or os.getenv("DB_NAME", "accident_analysis_db")
+else:
+    DB_HOST = os.getenv("DB_HOST") or os.getenv("TIDB_HOST", "localhost")
+    DB_PORT = int(os.getenv("DB_PORT") or os.getenv("TIDB_PORT", 3306))
+    DB_USER = os.getenv("DB_USER") or os.getenv("TIDB_USER", "root")
+    DB_PASSWORD = os.getenv("DB_PASSWORD") if os.getenv("DB_PASSWORD") is not None else os.getenv("TIDB_PASSWORD", "")
+    DB_NAME = os.getenv("DB_NAME") or os.getenv("TIDB_DATABASE", "accident_analysis_db")
 
 SQLITE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "accident_analysis.db")
 
@@ -31,7 +40,7 @@ def get_mysql_ssl_config():
     Supports secure, certificate-verified TLS connections for TiDB Cloud / cloud databases
     while preserving standard unencrypted connections for local MySQL.
     """
-    ssl_env = os.getenv("DB_SSL", "").strip().lower()
+    ssl_env = (os.getenv("TIDB_ENABLE_SSL") or os.getenv("DB_SSL", "")).strip().lower()
     is_cloud_db = (
         ssl_env in ("true", "1", "yes", "require")
         or DB_PORT == 4000
@@ -137,12 +146,12 @@ def get_db_connection():
                 user=DB_USER,
                 password=DB_PASSWORD,
                 database=DB_NAME,
-                autocommit=True,
+                autocommit=False,
                 connection_timeout=5,
                 **ssl_kwargs
             )
             return conn, "mysql"
-        except Exception as e:
+        except Exception:
             # Fall back to sqlite if unexpected runtime disconnect
             return get_sqlite_connection(), "sqlite"
     else:
@@ -185,8 +194,8 @@ def execute_query(sql, params=None, fetch="all"):
                 row = cursor.fetchone()
                 result = dict(row) if row else None
             elif fetch == "insert_id":
-                conn.commit()
                 result = cursor.lastrowid
+                conn.commit()
             else:
                 conn.commit()
                 result = cursor.rowcount
@@ -210,8 +219,13 @@ def execute_query(sql, params=None, fetch="all"):
             elif fetch == "one":
                 result = cursor.fetchone()
             elif fetch == "insert_id":
-                conn.commit()
                 result = cursor.lastrowid
+                if not result:
+                    cursor.execute("SELECT LAST_INSERT_ID() AS last_id")
+                    last_row = cursor.fetchone()
+                    if last_row and last_row.get("last_id"):
+                        result = last_row["last_id"]
+                conn.commit()
             else:
                 conn.commit()
                 result = cursor.rowcount
@@ -225,6 +239,7 @@ def execute_query(sql, params=None, fetch="all"):
         finally:
             cursor.close()
             conn.close()
+
 
 
 def init_db():
@@ -303,6 +318,7 @@ def init_db():
 def get_or_create_location(region, road_name=""):
     """
     Gets existing location_id or inserts a new location record.
+    Preserves existing location_id and respects unique constraints.
     """
     region = (region or "").strip()
     road_name = (road_name or "").strip()
@@ -322,7 +338,7 @@ def get_or_create_location(region, road_name=""):
             fetch="one"
         )
 
-    if row:
+    if row and row.get("location_id"):
         return row["location_id"]
 
     # Insert new with fallback in case of duplicate key
@@ -332,23 +348,26 @@ def get_or_create_location(region, road_name=""):
             (region, road_name_val),
             fetch="insert_id"
         )
-        return loc_id
+        if loc_id:
+            return loc_id
     except Exception:
-        if road_name_val:
-            row = execute_query(
-                "SELECT location_id FROM locations WHERE region = %s AND road_name = %s",
-                (region, road_name_val),
-                fetch="one"
-            )
-        else:
-            row = execute_query(
-                "SELECT location_id FROM locations WHERE region = %s AND (road_name IS NULL OR road_name = '')",
-                (region,),
-                fetch="one"
-            )
-        if row:
-            return row["location_id"]
-        raise
+        pass
+
+    if road_name_val:
+        row = execute_query(
+            "SELECT location_id FROM locations WHERE LOWER(region) = LOWER(%s) AND LOWER(road_name) = LOWER(%s)",
+            (region, road_name_val),
+            fetch="one"
+        )
+    else:
+        row = execute_query(
+            "SELECT location_id FROM locations WHERE LOWER(region) = LOWER(%s) AND (road_name IS NULL OR road_name = '')",
+            (region,),
+            fetch="one"
+        )
+    if row and row.get("location_id"):
+        return row["location_id"]
+    raise ValueError(f"Could not resolve or create location for '{region}' / '{road_name}'")
 
 
 def add_accident(accident_datetime_str, region, road_name, vehicle_type, severity, weather="Clear"):
@@ -421,6 +440,7 @@ def build_filter_conditions(filters, driver=None):
     """
     Builds parameterized SQL WHERE clause and parameter list from filter dict.
     Supports location, year, vehicle type, severity, weather, and keyword search.
+    Case-insensitive across all categorical fields.
     """
     filters = filters or {}
     conditions = []
@@ -441,33 +461,34 @@ def build_filter_conditions(filters, driver=None):
                 conditions.append("a.accident_datetime LIKE %s")
                 params.append(f"{yr}%")
 
-    # 2. Location Region filter
+    # 2. Location Region filter (case-insensitive)
     if filters.get("region"):
         reg = str(filters["region"]).strip()
         if reg:
-            conditions.append("l.region = %s")
+            conditions.append("LOWER(l.region) = LOWER(%s)")
             params.append(reg)
 
-    # 3. Vehicle type filter
+    # 3. Vehicle type filter (case-insensitive)
     if filters.get("vehicle_type"):
         veh = str(filters["vehicle_type"]).strip()
         if veh:
-            conditions.append("a.vehicle_type = %s")
+            conditions.append("LOWER(a.vehicle_type) = LOWER(%s)")
             params.append(veh)
 
-    # 4. Severity filter
+    # 4. Severity filter (case-insensitive)
     if filters.get("severity"):
         sev = str(filters["severity"]).strip()
         if sev:
-            conditions.append("a.severity = %s")
+            conditions.append("LOWER(a.severity) = LOWER(%s)")
             params.append(sev)
 
-    # 5. Weather filter
+    # 5. Weather filter (case-insensitive)
     if filters.get("weather"):
         wea = str(filters["weather"]).strip()
         if wea:
-            conditions.append("a.weather = %s")
+            conditions.append("LOWER(a.weather) = LOWER(%s)")
             params.append(wea)
+
 
     # 6. Keyword Search (accident location, year, vehicle type, severity, weather)
     if filters.get("search"):

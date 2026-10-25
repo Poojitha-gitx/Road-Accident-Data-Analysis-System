@@ -146,8 +146,8 @@ def get_summary_statistics(filters=None):
         "most_common_vehicle": top_vehicle,
         "peak_risk_region": top_region,
         "peak_risk_hour": top_hour_str,
-        "dataset_source": "Synthetic Demonstration Dataset (Simulated Urban Transit & Corridor Data)",
-        "location_granularity": "Metropolitan Regional Sectors & Named Arterial Corridors",
+        "dataset_source": "Synthetic Demonstration Dataset (Simulated Urban Transit & Corridor Data across Andhra Pradesh)",
+        "location_granularity": "Andhra Pradesh Regional Sectors (Tirupati, Madanapalle, Chittoor, Pileru, Srikalahasti, Puttur, Palamaner)",
         "disclaimer": "Analysis demonstrates observational associations and empirical distributions, not causal relationships."
     }
 

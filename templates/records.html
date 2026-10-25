@@ -43,10 +43,10 @@
       {% endif %}
     </div>
 
-    <div class="filter-grid" style="grid-template-columns: 2fr repeat(auto-fit, minmax(130px, 1fr)) auto;">
+    <div class="filter-grid" style="grid-template-columns: 2fr repeat(auto-fit, minmax(120px, 1fr)) auto;">
       <div class="form-group">
         <label>Search Accident Records</label>
-        <input type="text" name="search" id="searchInput" class="form-control" placeholder="Search location, year, vehicle, severity..." value="{{ filters.search }}">
+        <input type="text" name="search" id="searchInput" class="form-control" placeholder="Search location, road, vehicle, severity..." value="{{ filters.search }}">
       </div>
 
       <div class="form-group">
@@ -89,7 +89,17 @@
         </select>
       </div>
 
-      <div class="form-group" style="display: flex; gap: 8px;">
+      <div class="form-group">
+        <label>Weather</label>
+        <select name="weather" id="filterWeather" class="form-control">
+          <option value="">All Weather</option>
+          {% for w in valid_weathers %}
+            <option value="{{ w }}" {% if filters.weather == w %}selected{% endif %}>{{ w }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group" style="display: flex; gap: 8px; align-items: flex-end;">
         <button type="submit" class="btn btn-primary" id="searchBtn" style="flex: 1; justify-content: center;">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="11" cy="11" r="8"></circle>
@@ -97,8 +107,17 @@
           </svg>
           Search
         </button>
-        <a href="{{ url_for('records') }}" class="btn btn-secondary" id="resetBtn" style="justify-content: center; padding: 9px 14px;" title="Reset all search filters">
+        <a href="{{ url_for('records') }}" class="btn btn-secondary" id="resetBtn" style="justify-content: center; padding: 9px 12px;" title="Reset all search filters">
           Reset Filters
+        </a>
+        <a href="{{ url_for('dashboard', search=filters.search, year=filters.year, region=filters.region, vehicle_type=filters.vehicle_type, severity=filters.severity, weather=filters.weather) }}" class="btn btn-secondary" style="justify-content: center; padding: 9px 12px; background: rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.4); color: #93c5fd;" title="Apply current filters to Analytical Dashboard">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          Analyze in Dashboard
         </a>
       </div>
     </div>
@@ -237,12 +256,18 @@
       <div class="modal-body">
         <div class="form-group">
           <label>Geographic Region *</label>
-          <input type="text" name="region" id="add_region" class="form-control" placeholder="e.g. Downtown Metro Core, North Highway Corridor" required>
+          <select name="region" id="add_region" class="form-control" required>
+            <option value="">Select Andhra Pradesh Region</option>
+            {% for reg in all_regions %}
+              <option value="{{ reg }}">{{ reg }}</option>
+            {% endfor %}
+          </select>
         </div>
 
         <div class="form-group">
           <label>Road / Arterial Name (Optional)</label>
-          <input type="text" name="road_name" id="add_road_name" class="form-control" placeholder="e.g. Outer Ring Road Sector 7, Main Avenue">
+          <input type="text" name="road_name" id="add_road_name" class="form-control" placeholder="e.g. Main Road, Bypass Ring Road, Arterial Sector 4">
+          <small style="font-size: 0.72rem; color: var(--text-dim); display: block; margin-top: 4px;">Simulated road corridor (synthetic demonstration dataset).</small>
         </div>
 
         <div class="form-group">
@@ -298,12 +323,18 @@
       <div class="modal-body">
         <div class="form-group">
           <label>Geographic Region *</label>
-          <input type="text" name="region" id="edit_region" class="form-control" required>
+          <select name="region" id="edit_region" class="form-control" required>
+            <option value="">Select Andhra Pradesh Region</option>
+            {% for reg in all_regions %}
+              <option value="{{ reg }}">{{ reg }}</option>
+            {% endfor %}
+          </select>
         </div>
 
         <div class="form-group">
           <label>Road / Arterial Name (Optional)</label>
           <input type="text" name="road_name" id="edit_road_name" class="form-control">
+          <small style="font-size: 0.72rem; color: var(--text-dim); display: block; margin-top: 4px;">Simulated road corridor (synthetic demonstration dataset).</small>
         </div>
 
         <div class="form-group">

@@ -1,221 +1,221 @@
 region,road_name,accident_datetime,vehicle_type,severity,weather
-East Tech Hub,Outer Ring Road Sector 7,2021-01-07 16:42:58,Auto,Serious,Clear
-West Suburban Ring,Old Cantonment Road,2021-01-09 10:08:02,Bike,Minor,Rainy
-Old City Quarter,Heritage Gate Market Lane,2021-01-29 22:36:39,Other,Minor,Clear
-East Tech Hub,Cyber Park Main Road,2021-02-01 12:55:18,Bike,Serious,Clear
-Industrial Belt,Factory Zone Inner Ring,2021-02-26 10:13:03,Auto,Minor,Clear
-Downtown Metro Core,Commercial Boulevard,2021-02-28 05:28:13,Auto,Minor,Rainy
-East Tech Hub,Silicon Boulevard Junction,2021-03-22 19:50:27,Car,Minor,Clear
-South Suburbs,Southern Radial Road,2021-03-26 20:08:31,Bike,Minor,Clear
-West Suburban Ring,Sunset Hills Expressway,2021-05-02 21:28:55,Car,Minor,Clear
-North Highway Corridor,Airport Expressway Exit 4,2021-05-05 23:53:27,Car,Serious,Overcast
-Old City Quarter,Narrow Bazaar Crossing,2021-05-08 17:20:30,Car,Minor,Clear
-Industrial Belt,Logistics Terminal Approach,2021-05-08 20:42:11,Bike,Serious,Clear
-West Suburban Ring,Metro West Highway Junction,2021-06-02 09:00:14,Truck,Fatal,Foggy
-East Tech Hub,Outer Ring Road Sector 7,2021-06-04 14:33:36,Car,Minor,Rainy
-North Highway Corridor,NH-44 Expressway Mile 12,2021-06-06 00:33:14,Car,Serious,Rainy
-North Highway Corridor,NH-44 Expressway Mile 12,2021-06-18 07:17:46,Bike,Serious,Foggy
-Industrial Belt,Factory Zone Inner Ring,2021-07-02 08:55:46,Bike,Minor,Rainy
-Old City Quarter,Heritage Gate Market Lane,2021-07-13 20:24:05,Auto,Minor,Overcast
-West Suburban Ring,Old Cantonment Road,2021-08-04 00:51:32,Truck,Minor,Clear
-East Tech Hub,Outer Ring Road Sector 7,2021-08-04 16:23:11,Car,Minor,Rainy
-West Suburban Ring,Sunset Hills Expressway,2021-08-05 20:21:01,Bike,Minor,Rainy
-Downtown Metro Core,Central Station Circle,2021-08-19 21:02:23,Car,Minor,Rainy
-South Suburbs,Lakeside Ring Way,2021-08-22 17:55:38,Auto,Serious,Clear
-Old City Quarter,Narrow Bazaar Crossing,2021-08-22 20:28:33,Car,Minor,Clear
-West Suburban Ring,Old Cantonment Road,2021-08-23 09:03:17,Truck,Fatal,Overcast
-Old City Quarter,Heritage Gate Market Lane,2021-08-23 21:29:50,Truck,Minor,Overcast
-South Suburbs,Lakeside Ring Way,2021-09-03 08:18:24,Car,Minor,Overcast
-North Highway Corridor,NH-44 Expressway Mile 12,2021-09-05 21:43:15,Car,Minor,Foggy
-East Tech Hub,Outer Ring Road Sector 7,2021-09-18 14:10:56,Car,Minor,Foggy
-West Suburban Ring,Sunset Hills Expressway,2021-10-08 12:59:43,Car,Minor,Windy
-East Tech Hub,Silicon Boulevard Junction,2021-10-12 22:39:33,Truck,Fatal,Overcast
-East Tech Hub,Cyber Park Main Road,2021-10-13 01:56:55,Car,Minor,Clear
-South Suburbs,Southern Radial Road,2021-11-08 19:43:36,Bike,Fatal,Clear
-Downtown Metro Core,Main Avenue & 5th Cross,2021-11-09 18:57:46,Bike,Serious,Clear
-Industrial Belt,Logistics Terminal Approach,2021-11-14 09:22:02,Car,Serious,Rainy
-Industrial Belt,Factory Zone Inner Ring,2021-11-18 13:39:33,Other,Minor,Rainy
-East Tech Hub,Silicon Boulevard Junction,2021-11-28 03:43:29,Bike,Fatal,Clear
-Industrial Belt,Logistics Terminal Approach,2021-12-03 19:04:47,Bus,Minor,Rainy
-South Suburbs,Southern Radial Road,2021-12-06 17:34:22,Bike,Minor,Clear
-East Tech Hub,Silicon Boulevard Junction,2021-12-12 18:15:47,Bike,Minor,Rainy
-East Tech Hub,Cyber Park Main Road,2021-12-21 06:26:33,Auto,Minor,Rainy
-North Highway Corridor,Airport Expressway Exit 4,2021-12-22 20:11:22,Auto,Minor,Clear
-East Tech Hub,Cyber Park Main Road,2022-01-27 05:33:54,Bike,Serious,Clear
-West Suburban Ring,Metro West Highway Junction,2022-01-28 08:04:52,Bike,Minor,Clear
-West Suburban Ring,Sunset Hills Expressway,2022-01-29 19:48:06,Bike,Minor,Clear
-West Suburban Ring,Sunset Hills Expressway,2022-02-02 00:59:36,Bike,Serious,Clear
-Downtown Metro Core,Commercial Boulevard,2022-02-05 15:19:56,Bike,Minor,Foggy
-East Tech Hub,Outer Ring Road Sector 7,2022-02-11 10:37:14,Bike,Minor,Rainy
-Industrial Belt,Heavy Goods Corridor Road 9,2022-02-11 14:59:30,Car,Fatal,Overcast
-South Suburbs,Green Valley Avenue,2022-02-13 18:20:28,Bike,Minor,Clear
-Downtown Metro Core,Central Station Circle,2022-03-01 22:59:56,Bike,Minor,Rainy
-North Highway Corridor,NH-44 Expressway Mile 12,2022-03-04 18:54:59,Car,Minor,Rainy
-Downtown Metro Core,Commercial Boulevard,2022-03-06 18:45:44,Truck,Serious,Clear
-West Suburban Ring,Metro West Highway Junction,2022-03-11 08:19:47,Bike,Minor,Clear
-East Tech Hub,Outer Ring Road Sector 7,2022-03-21 18:29:51,Car,Fatal,Clear
-South Suburbs,Lakeside Ring Way,2022-03-22 01:36:19,Bike,Serious,Windy
-West Suburban Ring,Metro West Highway Junction,2022-03-24 10:04:24,Truck,Minor,Rainy
-East Tech Hub,Cyber Park Main Road,2022-04-04 10:16:08,Bike,Minor,Rainy
-Industrial Belt,Logistics Terminal Approach,2022-04-06 08:19:23,Auto,Serious,Foggy
-Industrial Belt,Logistics Terminal Approach,2022-04-13 10:58:52,Bike,Serious,Rainy
-Downtown Metro Core,Central Station Circle,2022-04-18 13:47:40,Bike,Fatal,Clear
-Downtown Metro Core,Commercial Boulevard,2022-04-20 17:59:10,Car,Minor,Clear
-East Tech Hub,Silicon Boulevard Junction,2022-04-26 04:19:55,Auto,Fatal,Foggy
-Industrial Belt,Factory Zone Inner Ring,2022-04-28 17:45:10,Bike,Serious,Clear
-Industrial Belt,Factory Zone Inner Ring,2022-05-12 01:03:40,Bike,Minor,Rainy
-South Suburbs,Green Valley Avenue,2022-05-13 01:07:20,Car,Minor,Rainy
-East Tech Hub,Outer Ring Road Sector 7,2022-05-21 17:42:06,Bus,Serious,Clear
-Downtown Metro Core,Central Station Circle,2022-05-30 07:29:41,Car,Serious,Clear
-Industrial Belt,Heavy Goods Corridor Road 9,2022-06-12 05:06:26,Car,Serious,Clear
-East Tech Hub,Silicon Boulevard Junction,2022-06-16 17:01:20,Bike,Minor,Other
-Industrial Belt,Heavy Goods Corridor Road 9,2022-06-25 16:25:08,Car,Serious,Clear
-South Suburbs,Green Valley Avenue,2022-07-18 20:48:40,Car,Minor,Clear
-East Tech Hub,Silicon Boulevard Junction,2022-08-01 09:43:49,Car,Fatal,Rainy
-East Tech Hub,Cyber Park Main Road,2022-08-22 10:12:32,Bus,Minor,Rainy
-North Highway Corridor,Northern Bypass Tollway,2022-09-13 10:32:31,Auto,Minor,Clear
-North Highway Corridor,Northern Bypass Tollway,2022-09-28 17:49:35,Truck,Minor,Clear
-East Tech Hub,Outer Ring Road Sector 7,2022-10-08 13:47:20,Car,Minor,Clear
-South Suburbs,Southern Radial Road,2022-10-16 19:29:24,Car,Minor,Clear
-Old City Quarter,Narrow Bazaar Crossing,2022-10-21 23:45:21,Other,Minor,Clear
-Old City Quarter,Heritage Gate Market Lane,2022-10-28 14:39:15,Car,Minor,Clear
-East Tech Hub,Silicon Boulevard Junction,2022-11-02 22:29:59,Bike,Minor,Overcast
-East Tech Hub,Outer Ring Road Sector 7,2022-11-09 04:36:51,Truck,Minor,Rainy
-North Highway Corridor,NH-44 Expressway Mile 12,2022-11-30 02:53:42,Car,Minor,Foggy
-West Suburban Ring,Old Cantonment Road,2022-11-30 08:37:52,Bike,Minor,Clear
-Industrial Belt,Logistics Terminal Approach,2022-12-16 22:52:15,Bike,Minor,Clear
-East Tech Hub,Silicon Boulevard Junction,2022-12-31 17:04:18,Truck,Minor,Clear
-East Tech Hub,Cyber Park Main Road,2023-01-05 21:30:56,Auto,Fatal,Clear
-East Tech Hub,Silicon Boulevard Junction,2023-01-12 22:37:55,Auto,Minor,Clear
-West Suburban Ring,Metro West Highway Junction,2023-01-17 15:51:04,Car,Minor,Clear
-Old City Quarter,Narrow Bazaar Crossing,2023-01-25 18:54:45,Truck,Serious,Rainy
-North Highway Corridor,Northern Bypass Tollway,2023-02-08 08:39:46,Bike,Minor,Clear
-North Highway Corridor,Airport Expressway Exit 4,2023-03-30 07:42:38,Car,Minor,Rainy
-Old City Quarter,Heritage Gate Market Lane,2023-04-03 18:47:49,Car,Minor,Clear
-Downtown Metro Core,Commercial Boulevard,2023-04-04 19:56:34,Auto,Minor,Clear
-Downtown Metro Core,Commercial Boulevard,2023-04-06 06:59:33,Bike,Serious,Rainy
-Downtown Metro Core,Central Station Circle,2023-04-09 09:24:32,Auto,Minor,Foggy
-Industrial Belt,Heavy Goods Corridor Road 9,2023-04-11 18:44:52,Auto,Minor,Clear
-West Suburban Ring,Metro West Highway Junction,2023-04-12 19:13:25,Car,Fatal,Clear
-West Suburban Ring,Metro West Highway Junction,2023-04-26 20:08:50,Car,Minor,Overcast
-Industrial Belt,Factory Zone Inner Ring,2023-04-28 08:24:55,Car,Serious,Rainy
-West Suburban Ring,Sunset Hills Expressway,2023-05-12 13:49:58,Car,Minor,Clear
-South Suburbs,Southern Radial Road,2023-05-29 09:00:35,Bike,Minor,Clear
-Old City Quarter,Narrow Bazaar Crossing,2023-05-29 19:43:27,Bike,Serious,Clear
-West Suburban Ring,Old Cantonment Road,2023-06-07 19:20:07,Bike,Minor,Clear
-Downtown Metro Core,Commercial Boulevard,2023-06-12 20:31:53,Car,Minor,Rainy
-North Highway Corridor,Airport Expressway Exit 4,2023-06-13 15:22:16,Bike,Fatal,Other
-South Suburbs,Lakeside Ring Way,2023-06-15 11:04:35,Truck,Minor,Clear
-Downtown Metro Core,Main Avenue & 5th Cross,2023-07-07 20:17:03,Car,Serious,Rainy
-South Suburbs,Green Valley Avenue,2023-07-19 10:33:26,Bus,Minor,Clear
-Downtown Metro Core,Central Station Circle,2023-07-29 10:17:19,Other,Minor,Rainy
-Old City Quarter,Heritage Gate Market Lane,2023-08-14 17:56:55,Auto,Minor,Clear
-East Tech Hub,Silicon Boulevard Junction,2023-08-22 23:44:52,Bike,Minor,Clear
-Old City Quarter,Heritage Gate Market Lane,2023-08-27 05:21:58,Car,Fatal,Clear
-South Suburbs,Lakeside Ring Way,2023-08-28 05:13:05,Car,Serious,Clear
-South Suburbs,Lakeside Ring Way,2023-09-05 09:49:56,Auto,Serious,Clear
-East Tech Hub,Cyber Park Main Road,2023-09-10 22:14:43,Car,Minor,Clear
-West Suburban Ring,Metro West Highway Junction,2023-09-11 19:58:01,Auto,Minor,Clear
-Downtown Metro Core,Main Avenue & 5th Cross,2023-09-29 10:02:20,Bike,Fatal,Foggy
-East Tech Hub,Outer Ring Road Sector 7,2023-10-22 20:18:29,Bus,Serious,Overcast
-North Highway Corridor,NH-44 Expressway Mile 12,2023-10-23 21:29:56,Bus,Minor,Clear
-West Suburban Ring,Old Cantonment Road,2023-10-30 20:31:10,Car,Fatal,Foggy
-South Suburbs,Southern Radial Road,2023-12-05 19:22:32,Bike,Minor,Clear
-North Highway Corridor,NH-44 Expressway Mile 12,2023-12-18 19:42:25,Auto,Minor,Rainy
-North Highway Corridor,NH-44 Expressway Mile 12,2024-01-17 17:42:24,Car,Minor,Overcast
-North Highway Corridor,NH-44 Expressway Mile 12,2024-01-20 18:12:37,Auto,Serious,Clear
-Downtown Metro Core,Commercial Boulevard,2024-01-29 13:27:43,Bike,Minor,Clear
-South Suburbs,Green Valley Avenue,2024-01-30 09:15:32,Car,Minor,Clear
-North Highway Corridor,NH-44 Expressway Mile 12,2024-01-30 19:34:57,Car,Minor,Rainy
-East Tech Hub,Outer Ring Road Sector 7,2024-02-11 16:18:53,Truck,Minor,Foggy
-Industrial Belt,Logistics Terminal Approach,2024-02-26 21:15:59,Bike,Serious,Clear
-North Highway Corridor,NH-44 Expressway Mile 12,2024-02-28 07:34:50,Bus,Minor,Clear
-Downtown Metro Core,Main Avenue & 5th Cross,2024-02-29 17:30:56,Car,Fatal,Clear
-South Suburbs,Green Valley Avenue,2024-03-10 17:33:38,Car,Serious,Clear
-East Tech Hub,Silicon Boulevard Junction,2024-04-07 23:30:35,Bike,Serious,Overcast
-North Highway Corridor,NH-44 Expressway Mile 12,2024-04-10 04:48:26,Bike,Minor,Rainy
-West Suburban Ring,Old Cantonment Road,2024-04-22 11:32:00,Car,Serious,Clear
-Industrial Belt,Logistics Terminal Approach,2024-05-10 09:29:42,Bus,Serious,Rainy
-Industrial Belt,Factory Zone Inner Ring,2024-05-19 22:30:17,Auto,Serious,Clear
-Industrial Belt,Logistics Terminal Approach,2024-05-24 15:01:19,Car,Minor,Clear
-Old City Quarter,Heritage Gate Market Lane,2024-05-29 22:54:44,Car,Minor,Clear
-Industrial Belt,Heavy Goods Corridor Road 9,2024-06-10 10:20:00,Car,Minor,Rainy
-South Suburbs,Green Valley Avenue,2024-06-18 09:42:27,Car,Minor,Foggy
-North Highway Corridor,Northern Bypass Tollway,2024-06-22 18:35:57,Bike,Serious,Clear
-South Suburbs,Green Valley Avenue,2024-07-04 19:50:58,Truck,Serious,Foggy
-South Suburbs,Green Valley Avenue,2024-07-10 09:22:41,Bike,Serious,Rainy
-West Suburban Ring,Metro West Highway Junction,2024-07-13 00:01:57,Car,Fatal,Clear
-Industrial Belt,Factory Zone Inner Ring,2024-07-21 20:01:08,Bike,Fatal,Clear
-West Suburban Ring,Old Cantonment Road,2024-07-25 20:29:28,Truck,Fatal,Clear
-North Highway Corridor,NH-44 Expressway Mile 12,2024-07-29 01:50:59,Car,Minor,Overcast
-Downtown Metro Core,Central Station Circle,2024-08-07 00:27:27,Auto,Serious,Clear
-Industrial Belt,Heavy Goods Corridor Road 9,2024-09-28 21:40:33,Truck,Minor,Clear
-East Tech Hub,Cyber Park Main Road,2024-10-05 08:57:44,Bike,Minor,Clear
-Old City Quarter,Heritage Gate Market Lane,2024-10-07 20:19:14,Car,Serious,Rainy
-Old City Quarter,Narrow Bazaar Crossing,2024-10-10 09:20:16,Bike,Minor,Rainy
-South Suburbs,Southern Radial Road,2024-10-12 01:51:22,Bike,Minor,Windy
-South Suburbs,Green Valley Avenue,2024-11-09 09:20:44,Bike,Minor,Windy
-South Suburbs,Green Valley Avenue,2024-11-13 20:17:21,Bike,Minor,Clear
-South Suburbs,Green Valley Avenue,2024-11-29 08:39:01,Bike,Minor,Rainy
-Downtown Metro Core,Main Avenue & 5th Cross,2024-12-01 17:14:49,Car,Minor,Clear
-South Suburbs,Lakeside Ring Way,2024-12-05 09:21:14,Car,Minor,Clear
-Old City Quarter,Narrow Bazaar Crossing,2024-12-23 03:08:07,Car,Fatal,Rainy
-West Suburban Ring,Old Cantonment Road,2024-12-25 04:19:44,Auto,Minor,Rainy
-East Tech Hub,Cyber Park Main Road,2024-12-28 04:20:16,Car,Fatal,Other
-East Tech Hub,Cyber Park Main Road,2025-01-07 10:24:32,Auto,Minor,Overcast
-South Suburbs,Lakeside Ring Way,2025-01-09 11:39:54,Car,Serious,Foggy
-South Suburbs,Green Valley Avenue,2025-01-13 09:05:37,Bike,Serious,Foggy
-Downtown Metro Core,Commercial Boulevard,2025-01-16 04:44:00,Car,Fatal,Rainy
-East Tech Hub,Outer Ring Road Sector 7,2025-01-27 10:03:06,Auto,Minor,Foggy
-Industrial Belt,Heavy Goods Corridor Road 9,2025-02-06 01:10:41,Bus,Minor,Clear
-North Highway Corridor,Airport Expressway Exit 4,2025-02-14 17:45:52,Bike,Minor,Clear
-East Tech Hub,Outer Ring Road Sector 7,2025-02-23 18:21:29,Auto,Serious,Clear
-South Suburbs,Green Valley Avenue,2025-02-26 08:05:30,Truck,Minor,Clear
-North Highway Corridor,Airport Expressway Exit 4,2025-03-26 07:44:17,Bike,Minor,Clear
-Industrial Belt,Heavy Goods Corridor Road 9,2025-03-29 09:34:15,Car,Minor,Foggy
-West Suburban Ring,Sunset Hills Expressway,2025-04-12 07:14:30,Bike,Fatal,Clear
-North Highway Corridor,NH-44 Expressway Mile 12,2025-04-20 16:37:13,Truck,Minor,Rainy
-North Highway Corridor,Northern Bypass Tollway,2025-04-27 06:05:17,Car,Minor,Windy
-Downtown Metro Core,Central Station Circle,2025-05-08 17:16:02,Bus,Minor,Overcast
-West Suburban Ring,Metro West Highway Junction,2025-06-09 08:03:15,Truck,Minor,Clear
-North Highway Corridor,NH-44 Expressway Mile 12,2025-06-18 23:45:37,Truck,Minor,Clear
-Old City Quarter,Narrow Bazaar Crossing,2025-06-24 19:56:39,Bike,Minor,Clear
-Downtown Metro Core,Central Station Circle,2025-06-26 03:03:17,Bike,Fatal,Clear
-Old City Quarter,Narrow Bazaar Crossing,2025-07-06 18:02:09,Bike,Minor,Overcast
-East Tech Hub,Outer Ring Road Sector 7,2025-07-24 08:07:34,Bike,Fatal,Clear
-West Suburban Ring,Old Cantonment Road,2025-07-25 20:05:52,Bike,Serious,Overcast
-Industrial Belt,Factory Zone Inner Ring,2025-07-27 07:24:35,Bike,Minor,Clear
-East Tech Hub,Cyber Park Main Road,2025-07-31 21:53:26,Car,Minor,Rainy
-Downtown Metro Core,Commercial Boulevard,2025-08-03 19:14:59,Truck,Serious,Rainy
-Downtown Metro Core,Central Station Circle,2025-08-13 18:42:38,Bike,Minor,Rainy
-Old City Quarter,Narrow Bazaar Crossing,2025-08-15 17:16:00,Other,Serious,Clear
-Downtown Metro Core,Main Avenue & 5th Cross,2025-08-22 20:02:35,Bike,Minor,Rainy
-West Suburban Ring,Metro West Highway Junction,2025-08-30 10:47:37,Car,Serious,Foggy
-West Suburban Ring,Old Cantonment Road,2025-09-05 20:13:39,Truck,Serious,Rainy
-East Tech Hub,Cyber Park Main Road,2025-09-09 22:32:03,Car,Fatal,Clear
-North Highway Corridor,Northern Bypass Tollway,2025-09-20 09:56:37,Bike,Fatal,Rainy
-West Suburban Ring,Metro West Highway Junction,2025-09-23 17:05:23,Bike,Minor,Windy
-East Tech Hub,Silicon Boulevard Junction,2025-09-25 18:36:36,Truck,Serious,Windy
-North Highway Corridor,NH-44 Expressway Mile 12,2025-09-25 19:42:32,Car,Serious,Overcast
-Downtown Metro Core,Central Station Circle,2025-09-27 19:53:59,Bike,Minor,Clear
-Industrial Belt,Logistics Terminal Approach,2025-10-02 21:26:54,Bike,Serious,Clear
-South Suburbs,Southern Radial Road,2025-10-03 12:29:25,Car,Serious,Clear
-North Highway Corridor,Northern Bypass Tollway,2025-10-09 09:56:51,Car,Serious,Rainy
-South Suburbs,Southern Radial Road,2025-10-10 20:14:54,Car,Serious,Clear
-Downtown Metro Core,Commercial Boulevard,2025-10-15 16:21:42,Other,Minor,Rainy
-Old City Quarter,Narrow Bazaar Crossing,2025-10-20 19:33:29,Bike,Fatal,Clear
-South Suburbs,Southern Radial Road,2025-11-04 11:09:12,Bike,Serious,Rainy
-South Suburbs,Lakeside Ring Way,2025-11-06 11:04:09,Bike,Minor,Clear
-Downtown Metro Core,Main Avenue & 5th Cross,2025-11-23 01:57:14,Other,Serious,Clear
-Industrial Belt,Heavy Goods Corridor Road 9,2025-11-24 08:22:01,Truck,Serious,Windy
-North Highway Corridor,Northern Bypass Tollway,2025-12-01 12:43:40,Car,Minor,Clear
-Old City Quarter,Narrow Bazaar Crossing,2025-12-04 15:20:00,Bike,Serious,Rainy
-Downtown Metro Core,Central Station Circle,2025-12-05 10:48:44,Bus,Minor,Rainy
-Industrial Belt,Factory Zone Inner Ring,2025-12-24 15:57:16,Car,Minor,Clear
-West Suburban Ring,Metro West Highway Junction,2025-12-29 13:14:54,Auto,Minor,Clear
-East Tech Hub,Cyber Park Main Road,2026-01-07 09:53:56,Car,Minor,Rainy
-Downtown Metro Core,Commercial Boulevard,2026-01-15 17:53:34,Bike,Minor,Rainy
-Old City Quarter,Narrow Bazaar Crossing,2026-02-27 18:19:14,Bike,Minor,Clear
-South Suburbs,Southern Radial Road,2026-03-11 09:40:33,Auto,Minor,Clear
-West Suburban Ring,Old Cantonment Road,2026-03-22 07:20:22,Bike,Fatal,Foggy
-West Suburban Ring,Old Cantonment Road,2026-03-29 13:45:12,Truck,Minor,Foggy
+Madanapalle,Outer Ring Road Sector 7,2021-01-07 16:42:58,Auto,Serious,Clear
+Palamaner,Old Cantonment Road,2021-01-09 10:08:02,Bike,Minor,Rainy
+Srikalahasti,Heritage Gate Market Lane,2021-01-29 22:36:39,Other,Minor,Clear
+Madanapalle,Cyber Park Main Road,2021-02-01 12:55:18,Bike,Serious,Clear
+Chittoor,Factory Zone Inner Ring,2021-02-26 10:13:03,Auto,Minor,Clear
+Tirupati,Commercial Boulevard,2021-02-28 05:28:13,Auto,Minor,Rainy
+Madanapalle,Silicon Boulevard Junction,2021-03-22 19:50:27,Car,Minor,Clear
+Puttur,Southern Radial Road,2021-03-26 20:08:31,Bike,Minor,Clear
+Palamaner,Sunset Hills Expressway,2021-05-02 21:28:55,Car,Minor,Clear
+Pileru,Airport Expressway Exit 4,2021-05-05 23:53:27,Car,Serious,Overcast
+Srikalahasti,Narrow Bazaar Crossing,2021-05-08 17:20:30,Car,Minor,Clear
+Chittoor,Logistics Terminal Approach,2021-05-08 20:42:11,Bike,Serious,Clear
+Palamaner,Metro West Highway Junction,2021-06-02 09:00:14,Truck,Fatal,Foggy
+Madanapalle,Outer Ring Road Sector 7,2021-06-04 14:33:36,Car,Minor,Rainy
+Pileru,NH-44 Expressway Mile 12,2021-06-06 00:33:14,Car,Serious,Rainy
+Pileru,NH-44 Expressway Mile 12,2021-06-18 07:17:46,Bike,Serious,Foggy
+Chittoor,Factory Zone Inner Ring,2021-07-02 08:55:46,Bike,Minor,Rainy
+Srikalahasti,Heritage Gate Market Lane,2021-07-13 20:24:05,Auto,Minor,Overcast
+Palamaner,Old Cantonment Road,2021-08-04 00:51:32,Truck,Minor,Clear
+Madanapalle,Outer Ring Road Sector 7,2021-08-04 16:23:11,Car,Minor,Rainy
+Palamaner,Sunset Hills Expressway,2021-08-05 20:21:01,Bike,Minor,Rainy
+Tirupati,Central Station Circle,2021-08-19 21:02:23,Car,Minor,Rainy
+Puttur,Lakeside Ring Way,2021-08-22 17:55:38,Auto,Serious,Clear
+Srikalahasti,Narrow Bazaar Crossing,2021-08-22 20:28:33,Car,Minor,Clear
+Palamaner,Old Cantonment Road,2021-08-23 09:03:17,Truck,Fatal,Overcast
+Srikalahasti,Heritage Gate Market Lane,2021-08-23 21:29:50,Truck,Minor,Overcast
+Puttur,Lakeside Ring Way,2021-09-03 08:18:24,Car,Minor,Overcast
+Pileru,NH-44 Expressway Mile 12,2021-09-05 21:43:15,Car,Minor,Foggy
+Madanapalle,Outer Ring Road Sector 7,2021-09-18 14:10:56,Car,Minor,Foggy
+Palamaner,Sunset Hills Expressway,2021-10-08 12:59:43,Car,Minor,Windy
+Madanapalle,Silicon Boulevard Junction,2021-10-12 22:39:33,Truck,Fatal,Overcast
+Madanapalle,Cyber Park Main Road,2021-10-13 01:56:55,Car,Minor,Clear
+Puttur,Southern Radial Road,2021-11-08 19:43:36,Bike,Fatal,Clear
+Tirupati,Main Avenue & 5th Cross,2021-11-09 18:57:46,Bike,Serious,Clear
+Chittoor,Logistics Terminal Approach,2021-11-14 09:22:02,Car,Serious,Rainy
+Chittoor,Factory Zone Inner Ring,2021-11-18 13:39:33,Other,Minor,Rainy
+Madanapalle,Silicon Boulevard Junction,2021-11-28 03:43:29,Bike,Fatal,Clear
+Chittoor,Logistics Terminal Approach,2021-12-03 19:04:47,Bus,Minor,Rainy
+Puttur,Southern Radial Road,2021-12-06 17:34:22,Bike,Minor,Clear
+Madanapalle,Silicon Boulevard Junction,2021-12-12 18:15:47,Bike,Minor,Rainy
+Madanapalle,Cyber Park Main Road,2021-12-21 06:26:33,Auto,Minor,Rainy
+Pileru,Airport Expressway Exit 4,2021-12-22 20:11:22,Auto,Minor,Clear
+Madanapalle,Cyber Park Main Road,2022-01-27 05:33:54,Bike,Serious,Clear
+Palamaner,Metro West Highway Junction,2022-01-28 08:04:52,Bike,Minor,Clear
+Palamaner,Sunset Hills Expressway,2022-01-29 19:48:06,Bike,Minor,Clear
+Palamaner,Sunset Hills Expressway,2022-02-02 00:59:36,Bike,Serious,Clear
+Tirupati,Commercial Boulevard,2022-02-05 15:19:56,Bike,Minor,Foggy
+Madanapalle,Outer Ring Road Sector 7,2022-02-11 10:37:14,Bike,Minor,Rainy
+Chittoor,Heavy Goods Corridor Road 9,2022-02-11 14:59:30,Car,Fatal,Overcast
+Puttur,Green Valley Avenue,2022-02-13 18:20:28,Bike,Minor,Clear
+Tirupati,Central Station Circle,2022-03-01 22:59:56,Bike,Minor,Rainy
+Pileru,NH-44 Expressway Mile 12,2022-03-04 18:54:59,Car,Minor,Rainy
+Tirupati,Commercial Boulevard,2022-03-06 18:45:44,Truck,Serious,Clear
+Palamaner,Metro West Highway Junction,2022-03-11 08:19:47,Bike,Minor,Clear
+Madanapalle,Outer Ring Road Sector 7,2022-03-21 18:29:51,Car,Fatal,Clear
+Puttur,Lakeside Ring Way,2022-03-22 01:36:19,Bike,Serious,Windy
+Palamaner,Metro West Highway Junction,2022-03-24 10:04:24,Truck,Minor,Rainy
+Madanapalle,Cyber Park Main Road,2022-04-04 10:16:08,Bike,Minor,Rainy
+Chittoor,Logistics Terminal Approach,2022-04-06 08:19:23,Auto,Serious,Foggy
+Chittoor,Logistics Terminal Approach,2022-04-13 10:58:52,Bike,Serious,Rainy
+Tirupati,Central Station Circle,2022-04-18 13:47:40,Bike,Fatal,Clear
+Tirupati,Commercial Boulevard,2022-04-20 17:59:10,Car,Minor,Clear
+Madanapalle,Silicon Boulevard Junction,2022-04-26 04:19:55,Auto,Fatal,Foggy
+Chittoor,Factory Zone Inner Ring,2022-04-28 17:45:10,Bike,Serious,Clear
+Chittoor,Factory Zone Inner Ring,2022-05-12 01:03:40,Bike,Minor,Rainy
+Puttur,Green Valley Avenue,2022-05-13 01:07:20,Car,Minor,Rainy
+Madanapalle,Outer Ring Road Sector 7,2022-05-21 17:42:06,Bus,Serious,Clear
+Tirupati,Central Station Circle,2022-05-30 07:29:41,Car,Serious,Clear
+Chittoor,Heavy Goods Corridor Road 9,2022-06-12 05:06:26,Car,Serious,Clear
+Madanapalle,Silicon Boulevard Junction,2022-06-16 17:01:20,Bike,Minor,Other
+Chittoor,Heavy Goods Corridor Road 9,2022-06-25 16:25:08,Car,Serious,Clear
+Puttur,Green Valley Avenue,2022-07-18 20:48:40,Car,Minor,Clear
+Madanapalle,Silicon Boulevard Junction,2022-08-01 09:43:49,Car,Fatal,Rainy
+Madanapalle,Cyber Park Main Road,2022-08-22 10:12:32,Bus,Minor,Rainy
+Pileru,Northern Bypass Tollway,2022-09-13 10:32:31,Auto,Minor,Clear
+Pileru,Northern Bypass Tollway,2022-09-28 17:49:35,Truck,Minor,Clear
+Madanapalle,Outer Ring Road Sector 7,2022-10-08 13:47:20,Car,Minor,Clear
+Puttur,Southern Radial Road,2022-10-16 19:29:24,Car,Minor,Clear
+Srikalahasti,Narrow Bazaar Crossing,2022-10-21 23:45:21,Other,Minor,Clear
+Srikalahasti,Heritage Gate Market Lane,2022-10-28 14:39:15,Car,Minor,Clear
+Madanapalle,Silicon Boulevard Junction,2022-11-02 22:29:59,Bike,Minor,Overcast
+Madanapalle,Outer Ring Road Sector 7,2022-11-09 04:36:51,Truck,Minor,Rainy
+Pileru,NH-44 Expressway Mile 12,2022-11-30 02:53:42,Car,Minor,Foggy
+Palamaner,Old Cantonment Road,2022-11-30 08:37:52,Bike,Minor,Clear
+Chittoor,Logistics Terminal Approach,2022-12-16 22:52:15,Bike,Minor,Clear
+Madanapalle,Silicon Boulevard Junction,2022-12-31 17:04:18,Truck,Minor,Clear
+Madanapalle,Cyber Park Main Road,2023-01-05 21:30:56,Auto,Fatal,Clear
+Madanapalle,Silicon Boulevard Junction,2023-01-12 22:37:55,Auto,Minor,Clear
+Palamaner,Metro West Highway Junction,2023-01-17 15:51:04,Car,Minor,Clear
+Srikalahasti,Narrow Bazaar Crossing,2023-01-25 18:54:45,Truck,Serious,Rainy
+Pileru,Northern Bypass Tollway,2023-02-08 08:39:46,Bike,Minor,Clear
+Pileru,Airport Expressway Exit 4,2023-03-30 07:42:38,Car,Minor,Rainy
+Srikalahasti,Heritage Gate Market Lane,2023-04-03 18:47:49,Car,Minor,Clear
+Tirupati,Commercial Boulevard,2023-04-04 19:56:34,Auto,Minor,Clear
+Tirupati,Commercial Boulevard,2023-04-06 06:59:33,Bike,Serious,Rainy
+Tirupati,Central Station Circle,2023-04-09 09:24:32,Auto,Minor,Foggy
+Chittoor,Heavy Goods Corridor Road 9,2023-04-11 18:44:52,Auto,Minor,Clear
+Palamaner,Metro West Highway Junction,2023-04-12 19:13:25,Car,Fatal,Clear
+Palamaner,Metro West Highway Junction,2023-04-26 20:08:50,Car,Minor,Overcast
+Chittoor,Factory Zone Inner Ring,2023-04-28 08:24:55,Car,Serious,Rainy
+Palamaner,Sunset Hills Expressway,2023-05-12 13:49:58,Car,Minor,Clear
+Puttur,Southern Radial Road,2023-05-29 09:00:35,Bike,Minor,Clear
+Srikalahasti,Narrow Bazaar Crossing,2023-05-29 19:43:27,Bike,Serious,Clear
+Palamaner,Old Cantonment Road,2023-06-07 19:20:07,Bike,Minor,Clear
+Tirupati,Commercial Boulevard,2023-06-12 20:31:53,Car,Minor,Rainy
+Pileru,Airport Expressway Exit 4,2023-06-13 15:22:16,Bike,Fatal,Other
+Puttur,Lakeside Ring Way,2023-06-15 11:04:35,Truck,Minor,Clear
+Tirupati,Main Avenue & 5th Cross,2023-07-07 20:17:03,Car,Serious,Rainy
+Puttur,Green Valley Avenue,2023-07-19 10:33:26,Bus,Minor,Clear
+Tirupati,Central Station Circle,2023-07-29 10:17:19,Other,Minor,Rainy
+Srikalahasti,Heritage Gate Market Lane,2023-08-14 17:56:55,Auto,Minor,Clear
+Madanapalle,Silicon Boulevard Junction,2023-08-22 23:44:52,Bike,Minor,Clear
+Srikalahasti,Heritage Gate Market Lane,2023-08-27 05:21:58,Car,Fatal,Clear
+Puttur,Lakeside Ring Way,2023-08-28 05:13:05,Car,Serious,Clear
+Puttur,Lakeside Ring Way,2023-09-05 09:49:56,Auto,Serious,Clear
+Madanapalle,Cyber Park Main Road,2023-09-10 22:14:43,Car,Minor,Clear
+Palamaner,Metro West Highway Junction,2023-09-11 19:58:01,Auto,Minor,Clear
+Tirupati,Main Avenue & 5th Cross,2023-09-29 10:02:20,Bike,Fatal,Foggy
+Madanapalle,Outer Ring Road Sector 7,2023-10-22 20:18:29,Bus,Serious,Overcast
+Pileru,NH-44 Expressway Mile 12,2023-10-23 21:29:56,Bus,Minor,Clear
+Palamaner,Old Cantonment Road,2023-10-30 20:31:10,Car,Fatal,Foggy
+Puttur,Southern Radial Road,2023-12-05 19:22:32,Bike,Minor,Clear
+Pileru,NH-44 Expressway Mile 12,2023-12-18 19:42:25,Auto,Minor,Rainy
+Pileru,NH-44 Expressway Mile 12,2024-01-17 17:42:24,Car,Minor,Overcast
+Pileru,NH-44 Expressway Mile 12,2024-01-20 18:12:37,Auto,Serious,Clear
+Tirupati,Commercial Boulevard,2024-01-29 13:27:43,Bike,Minor,Clear
+Puttur,Green Valley Avenue,2024-01-30 09:15:32,Car,Minor,Clear
+Pileru,NH-44 Expressway Mile 12,2024-01-30 19:34:57,Car,Minor,Rainy
+Madanapalle,Outer Ring Road Sector 7,2024-02-11 16:18:53,Truck,Minor,Foggy
+Chittoor,Logistics Terminal Approach,2024-02-26 21:15:59,Bike,Serious,Clear
+Pileru,NH-44 Expressway Mile 12,2024-02-28 07:34:50,Bus,Minor,Clear
+Tirupati,Main Avenue & 5th Cross,2024-02-29 17:30:56,Car,Fatal,Clear
+Puttur,Green Valley Avenue,2024-03-10 17:33:38,Car,Serious,Clear
+Madanapalle,Silicon Boulevard Junction,2024-04-07 23:30:35,Bike,Serious,Overcast
+Pileru,NH-44 Expressway Mile 12,2024-04-10 04:48:26,Bike,Minor,Rainy
+Palamaner,Old Cantonment Road,2024-04-22 11:32:00,Car,Serious,Clear
+Chittoor,Logistics Terminal Approach,2024-05-10 09:29:42,Bus,Serious,Rainy
+Chittoor,Factory Zone Inner Ring,2024-05-19 22:30:17,Auto,Serious,Clear
+Chittoor,Logistics Terminal Approach,2024-05-24 15:01:19,Car,Minor,Clear
+Srikalahasti,Heritage Gate Market Lane,2024-05-29 22:54:44,Car,Minor,Clear
+Chittoor,Heavy Goods Corridor Road 9,2024-06-10 10:20:00,Car,Minor,Rainy
+Puttur,Green Valley Avenue,2024-06-18 09:42:27,Car,Minor,Foggy
+Pileru,Northern Bypass Tollway,2024-06-22 18:35:57,Bike,Serious,Clear
+Puttur,Green Valley Avenue,2024-07-04 19:50:58,Truck,Serious,Foggy
+Puttur,Green Valley Avenue,2024-07-10 09:22:41,Bike,Serious,Rainy
+Palamaner,Metro West Highway Junction,2024-07-13 00:01:57,Car,Fatal,Clear
+Chittoor,Factory Zone Inner Ring,2024-07-21 20:01:08,Bike,Fatal,Clear
+Palamaner,Old Cantonment Road,2024-07-25 20:29:28,Truck,Fatal,Clear
+Pileru,NH-44 Expressway Mile 12,2024-07-29 01:50:59,Car,Minor,Overcast
+Tirupati,Central Station Circle,2024-08-07 00:27:27,Auto,Serious,Clear
+Chittoor,Heavy Goods Corridor Road 9,2024-09-28 21:40:33,Truck,Minor,Clear
+Madanapalle,Cyber Park Main Road,2024-10-05 08:57:44,Bike,Minor,Clear
+Srikalahasti,Heritage Gate Market Lane,2024-10-07 20:19:14,Car,Serious,Rainy
+Srikalahasti,Narrow Bazaar Crossing,2024-10-10 09:20:16,Bike,Minor,Rainy
+Puttur,Southern Radial Road,2024-10-12 01:51:22,Bike,Minor,Windy
+Puttur,Green Valley Avenue,2024-11-09 09:20:44,Bike,Minor,Windy
+Puttur,Green Valley Avenue,2024-11-13 20:17:21,Bike,Minor,Clear
+Puttur,Green Valley Avenue,2024-11-29 08:39:01,Bike,Minor,Rainy
+Tirupati,Main Avenue & 5th Cross,2024-12-01 17:14:49,Car,Minor,Clear
+Puttur,Lakeside Ring Way,2024-12-05 09:21:14,Car,Minor,Clear
+Srikalahasti,Narrow Bazaar Crossing,2024-12-23 03:08:07,Car,Fatal,Rainy
+Palamaner,Old Cantonment Road,2024-12-25 04:19:44,Auto,Minor,Rainy
+Madanapalle,Cyber Park Main Road,2024-12-28 04:20:16,Car,Fatal,Other
+Madanapalle,Cyber Park Main Road,2025-01-07 10:24:32,Auto,Minor,Overcast
+Puttur,Lakeside Ring Way,2025-01-09 11:39:54,Car,Serious,Foggy
+Puttur,Green Valley Avenue,2025-01-13 09:05:37,Bike,Serious,Foggy
+Tirupati,Commercial Boulevard,2025-01-16 04:44:00,Car,Fatal,Rainy
+Madanapalle,Outer Ring Road Sector 7,2025-01-27 10:03:06,Auto,Minor,Foggy
+Chittoor,Heavy Goods Corridor Road 9,2025-02-06 01:10:41,Bus,Minor,Clear
+Pileru,Airport Expressway Exit 4,2025-02-14 17:45:52,Bike,Minor,Clear
+Madanapalle,Outer Ring Road Sector 7,2025-02-23 18:21:29,Auto,Serious,Clear
+Puttur,Green Valley Avenue,2025-02-26 08:05:30,Truck,Minor,Clear
+Pileru,Airport Expressway Exit 4,2025-03-26 07:44:17,Bike,Minor,Clear
+Chittoor,Heavy Goods Corridor Road 9,2025-03-29 09:34:15,Car,Minor,Foggy
+Palamaner,Sunset Hills Expressway,2025-04-12 07:14:30,Bike,Fatal,Clear
+Pileru,NH-44 Expressway Mile 12,2025-04-20 16:37:13,Truck,Minor,Rainy
+Pileru,Northern Bypass Tollway,2025-04-27 06:05:17,Car,Minor,Windy
+Tirupati,Central Station Circle,2025-05-08 17:16:02,Bus,Minor,Overcast
+Palamaner,Metro West Highway Junction,2025-06-09 08:03:15,Truck,Minor,Clear
+Pileru,NH-44 Expressway Mile 12,2025-06-18 23:45:37,Truck,Minor,Clear
+Srikalahasti,Narrow Bazaar Crossing,2025-06-24 19:56:39,Bike,Minor,Clear
+Tirupati,Central Station Circle,2025-06-26 03:03:17,Bike,Fatal,Clear
+Srikalahasti,Narrow Bazaar Crossing,2025-07-06 18:02:09,Bike,Minor,Overcast
+Madanapalle,Outer Ring Road Sector 7,2025-07-24 08:07:34,Bike,Fatal,Clear
+Palamaner,Old Cantonment Road,2025-07-25 20:05:52,Bike,Serious,Overcast
+Chittoor,Factory Zone Inner Ring,2025-07-27 07:24:35,Bike,Minor,Clear
+Madanapalle,Cyber Park Main Road,2025-07-31 21:53:26,Car,Minor,Rainy
+Tirupati,Commercial Boulevard,2025-08-03 19:14:59,Truck,Serious,Rainy
+Tirupati,Central Station Circle,2025-08-13 18:42:38,Bike,Minor,Rainy
+Srikalahasti,Narrow Bazaar Crossing,2025-08-15 17:16:00,Other,Serious,Clear
+Tirupati,Main Avenue & 5th Cross,2025-08-22 20:02:35,Bike,Minor,Rainy
+Palamaner,Metro West Highway Junction,2025-08-30 10:47:37,Car,Serious,Foggy
+Palamaner,Old Cantonment Road,2025-09-05 20:13:39,Truck,Serious,Rainy
+Madanapalle,Cyber Park Main Road,2025-09-09 22:32:03,Car,Fatal,Clear
+Pileru,Northern Bypass Tollway,2025-09-20 09:56:37,Bike,Fatal,Rainy
+Palamaner,Metro West Highway Junction,2025-09-23 17:05:23,Bike,Minor,Windy
+Madanapalle,Silicon Boulevard Junction,2025-09-25 18:36:36,Truck,Serious,Windy
+Pileru,NH-44 Expressway Mile 12,2025-09-25 19:42:32,Car,Serious,Overcast
+Tirupati,Central Station Circle,2025-09-27 19:53:59,Bike,Minor,Clear
+Chittoor,Logistics Terminal Approach,2025-10-02 21:26:54,Bike,Serious,Clear
+Puttur,Southern Radial Road,2025-10-03 12:29:25,Car,Serious,Clear
+Pileru,Northern Bypass Tollway,2025-10-09 09:56:51,Car,Serious,Rainy
+Puttur,Southern Radial Road,2025-10-10 20:14:54,Car,Serious,Clear
+Tirupati,Commercial Boulevard,2025-10-15 16:21:42,Other,Minor,Rainy
+Srikalahasti,Narrow Bazaar Crossing,2025-10-20 19:33:29,Bike,Fatal,Clear
+Puttur,Southern Radial Road,2025-11-04 11:09:12,Bike,Serious,Rainy
+Puttur,Lakeside Ring Way,2025-11-06 11:04:09,Bike,Minor,Clear
+Tirupati,Main Avenue & 5th Cross,2025-11-23 01:57:14,Other,Serious,Clear
+Chittoor,Heavy Goods Corridor Road 9,2025-11-24 08:22:01,Truck,Serious,Windy
+Pileru,Northern Bypass Tollway,2025-12-01 12:43:40,Car,Minor,Clear
+Srikalahasti,Narrow Bazaar Crossing,2025-12-04 15:20:00,Bike,Serious,Rainy
+Tirupati,Central Station Circle,2025-12-05 10:48:44,Bus,Minor,Rainy
+Chittoor,Factory Zone Inner Ring,2025-12-24 15:57:16,Car,Minor,Clear
+Palamaner,Metro West Highway Junction,2025-12-29 13:14:54,Auto,Minor,Clear
+Madanapalle,Cyber Park Main Road,2026-01-07 09:53:56,Car,Minor,Rainy
+Tirupati,Commercial Boulevard,2026-01-15 17:53:34,Bike,Minor,Rainy
+Srikalahasti,Narrow Bazaar Crossing,2026-02-27 18:19:14,Bike,Minor,Clear
+Puttur,Southern Radial Road,2026-03-11 09:40:33,Auto,Minor,Clear
+Palamaner,Old Cantonment Road,2026-03-22 07:20:22,Bike,Fatal,Foggy
+Palamaner,Old Cantonment Road,2026-03-29 13:45:12,Truck,Minor,Foggy

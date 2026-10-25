@@ -22,6 +22,18 @@ venv.bak/
 *.sqlite
 *.sqlite3
 *.db-journal
+*.sql
+backup_*.json
+backup_*.sql
+tidb_cloud_backup*.json
+proposed_selection.json
+backup_tidb.py
+prepare_selection.py
+find_best_selection.py
+apply_approved_changes.py
+verify_backup_restorable.py
+check_local_db.py
+test_tidb_live.py
 
 # Operating System files
 .DS_Store
@@ -38,3 +50,4 @@ desktop.ini
 *.log
 temp_exports/
 static/generated_charts/*.png
+

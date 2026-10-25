@@ -31,18 +31,18 @@ An end-to-end, full-stack analytical web platform built to record, monitor, anal
 
 ## 📊 Dataset Composition & Provenance
 
-The system currently manages **226 accident records** in the MySQL database:
+The system currently manages **36 verified accident records** in the TiDB Cloud production database:
 
-1. **Initial Synthetic Sample Dataset (220 Records):**
-   - **Records:** `#1` through `#220`
-   - **Provenance:** Artificially synthesized demonstration data spanning 2021 through 2026 across major metropolitan corridors (e.g., *Downtown Metro Core*, *North Highway Corridor*, *East Tech Hub*, *Industrial Belt*, *South Suburbs*, *West Suburban Ring*, *Old City Quarter*).
-   - **Purpose:** Created specifically for reproducible academic analysis, testing, and statistical visualization.
-2. **Testing Records (6 Records):**
+1. **Approved Synthetic Demonstration Dataset (30 Records):**
+   - **Provenance:** Artificially synthesized demonstration data spanning 2021 through 2026 across major Andhra Pradesh regional sectors (*Tirupati*, *Madanapalle*, *Chittoor*, *Pileru*, *Srikalahasti*, *Puttur*, *Palamaner*).
+   - **Purpose:** Created specifically for reproducible academic analysis, testing, and statistical visualization with balanced distribution across years, vehicle types, weather conditions, and injury severity.
+2. **Testing & Verification Records (6 Records):**
    - **Records:** `#221`, `#222`, `#224`, `#225`, `#226`, `#227`
-   - **Provenance:** Created during system verification and integration testing of the interactive **"Add Accident Record"** form and live MySQL `COMMIT` pipeline (location: *tirupati / main road*).
+   - **Provenance:** Created during system verification and integration testing of the interactive **"Add Accident Record"** form and live TiDB Cloud `COMMIT` pipeline (location: *Tirupati / main road*).
 3. **Data Privacy & Governance:**
    - **Zero Personally Identifying Information (PII):** No names, vehicle registration plates, or personal IDs are stored.
    - **Observational Correlation:** All findings demonstrate empirical associations, not direct causation.
+   - **Synthetic Dataset Notice:** All road names represent simulated sector corridors for academic simulation.
 
 ---
 

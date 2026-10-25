@@ -14,26 +14,26 @@ import random
 from datetime import datetime, timedelta
 
 REGIONS_AND_ROADS = [
-    ("Downtown Metro Core", "Main Avenue & 5th Cross"),
-    ("Downtown Metro Core", "Central Station Circle"),
-    ("Downtown Metro Core", "Commercial Boulevard"),
-    ("North Highway Corridor", "NH-44 Expressway Mile 12"),
-    ("North Highway Corridor", "Northern Bypass Tollway"),
-    ("North Highway Corridor", "Airport Expressway Exit 4"),
-    ("East Tech Hub", "Cyber Park Main Road"),
-    ("East Tech Hub", "Silicon Boulevard Junction"),
-    ("East Tech Hub", "Outer Ring Road Sector 7"),
-    ("Industrial Belt", "Heavy Goods Corridor Road 9"),
-    ("Industrial Belt", "Factory Zone Inner Ring"),
-    ("Industrial Belt", "Logistics Terminal Approach"),
-    ("South Suburbs", "Lakeside Ring Way"),
-    ("South Suburbs", "Green Valley Avenue"),
-    ("South Suburbs", "Southern Radial Road"),
-    ("West Suburban Ring", "Metro West Highway Junction"),
-    ("West Suburban Ring", "Sunset Hills Expressway"),
-    ("West Suburban Ring", "Old Cantonment Road"),
-    ("Old City Quarter", "Heritage Gate Market Lane"),
-    ("Old City Quarter", "Narrow Bazaar Crossing")
+    ("Tirupati", "Main Avenue & 5th Cross"),
+    ("Tirupati", "Central Station Circle"),
+    ("Tirupati", "Commercial Boulevard"),
+    ("Pileru", "NH-44 Expressway Mile 12"),
+    ("Pileru", "Northern Bypass Tollway"),
+    ("Pileru", "Airport Expressway Exit 4"),
+    ("Madanapalle", "Cyber Park Main Road"),
+    ("Madanapalle", "Silicon Boulevard Junction"),
+    ("Madanapalle", "Outer Ring Road Sector 7"),
+    ("Chittoor", "Heavy Goods Corridor Road 9"),
+    ("Chittoor", "Factory Zone Inner Ring"),
+    ("Chittoor", "Logistics Terminal Approach"),
+    ("Puttur", "Lakeside Ring Way"),
+    ("Puttur", "Green Valley Avenue"),
+    ("Puttur", "Southern Radial Road"),
+    ("Palamaner", "Metro West Highway Junction"),
+    ("Palamaner", "Sunset Hills Expressway"),
+    ("Palamaner", "Old Cantonment Road"),
+    ("Srikalahasti", "Heritage Gate Market Lane"),
+    ("Srikalahasti", "Narrow Bazaar Crossing")
 ]
 
 VEHICLE_TYPES = ["Bike", "Car", "Bus", "Truck", "Auto", "Other"]
