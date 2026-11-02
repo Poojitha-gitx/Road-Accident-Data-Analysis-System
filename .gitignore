@@ -51,3 +51,4 @@ desktop.ini
 temp_exports/
 static/generated_charts/*.png
 
+*.bundle
