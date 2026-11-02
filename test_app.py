@@ -33,7 +33,7 @@ def run_tests():
     env = Environment(loader=FileSystemLoader("templates"))
     template_list = [
         "base.html", "dashboard.html", "records.html", "analysis.html", "reports.html",
-        "auth_base.html", "login.html", "signup.html", "verify_otp.html",
+        "auth_base.html", "login.html", "signup.html",
         "forgot_password.html", "reset_password.html", "profile.html", "admin_users.html"
     ]
     for t_name in template_list:

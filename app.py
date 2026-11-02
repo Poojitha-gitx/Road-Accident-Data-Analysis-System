@@ -86,12 +86,6 @@ def inject_global_context():
 # Routes
 # ============================================================
 
-@app.route("/")
-def index():
-    if "user_id" in session:
-        return redirect(url_for("dashboard"))
-    return redirect(url_for("login"))
-
 
 @app.route("/dashboard")
 @login_required
@@ -544,93 +538,16 @@ def signup():
     return render_template("signup.html")
 
 
-@app.route("/verify-otp", methods=["GET", "POST"])
-def verify_otp():
-    """Validates 6-digit OTP code for signup registration or password recovery."""
-    purpose = request.args.get("purpose") or request.form.get("purpose") or "signup"
-    email = request.args.get("email") or request.form.get("email") or ""
-    email = email.strip().lower()
-
-    if not email:
-        if purpose == "signup" and session.get("pending_signup"):
-            email = session["pending_signup"].get("email", "")
-        elif purpose == "forgot_password" and session.get("reset_email"):
-            email = session.get("reset_email", "")
-
-    if not email:
-        flash("Invalid verification request session. Please restart the process.", "warning")
-        return redirect(url_for("signup" if purpose == "signup" else "forgot_password"))
-
-    can_resend, remaining_cd = database.check_otp_resend_cooldown(email, purpose, cooldown_seconds=60)
-
-    if request.method == "POST":
-        otp_code = request.form.get("otp_code", "").strip()
-        if not otp_code or len(otp_code) != 6 or not otp_code.isdigit():
-            flash("Please enter a valid 6-digit numeric verification code.", "danger")
-            return render_template("verify_otp.html", email=email, purpose=purpose, remaining_cooldown=remaining_cd)
-
-        is_valid, msg = database.verify_otp_attempt(email, otp_code, purpose)
-        if not is_valid:
-            flash(msg, "danger")
-            return render_template("verify_otp.html", email=email, purpose=purpose, remaining_cooldown=remaining_cd)
-
-        if purpose == "signup":
-            pending = session.get("pending_signup")
-            if not pending or pending.get("email") != email:
-                flash("Signup registration session expired. Please sign up again.", "warning")
-                return redirect(url_for("signup"))
-
-            # Create user in database with automatically assigned 'user' role
-            database.create_user(
-                full_name=pending["full_name"],
-                email=pending["email"],
-                password_hash=pending["password_hash"],
-                role="user",
-                is_active=1
-            )
-            session.pop("pending_signup", None)
-            flash("Account successfully created and verified! You can now log in.", "success")
-            return redirect(url_for("login"))
-
-        elif purpose == "forgot_password":
-            session["can_reset_password"] = email
-            flash("Security code verified successfully. Please choose a new password.", "success")
-            return redirect(url_for("reset_password"))
-
-    return render_template(
-        "verify_otp.html",
-        email=email,
-        purpose=purpose,
-        remaining_cooldown=remaining_cd
-    )
-
-
-@app.route("/resend-otp", methods=["POST"])
-def resend_otp():
-    """Resends a new OTP code if the cooldown period has elapsed."""
-    purpose = request.form.get("purpose", "signup")
-    email = request.form.get("email", "").strip().lower()
-
-    if not email:
-        flash("Email address required to resend verification code.", "danger")
-        return redirect(url_for("login"))
-
-    can_resend, rem = database.check_otp_resend_cooldown(email, purpose, cooldown_seconds=60)
-    if not can_resend:
-        flash(f"Please wait {rem} seconds before requesting a new verification code.", "warning")
-        return redirect(url_for("verify_otp", purpose=purpose, email=email))
-
-    otp_code = database.generate_and_store_otp(email, purpose=purpose, expires_in_minutes=5)
-    auth_utils.send_otp_email(email, otp_code, purpose=purpose)
-
-    flash("A fresh 6-digit verification code has been dispatched to your email address.", "info")
-    return redirect(url_for("verify_otp", purpose=purpose, email=email))
-
-
 @app.route("/login", methods=["GET", "POST"])
+@app.route("/", methods=["GET", "POST"])
 def login():
-    """Authenticates users via email and password."""
+    """
+    Root & Login portal for https://road-accident-data-analysis-system.onrender.com/
+    Renders professional banking-style authentication portal or redirects active sessions.
+    """
     if "user_id" in session:
+        if session.get("user_role") == "admin":
+            return redirect(url_for("admin_dashboard"))
         return redirect(url_for("dashboard"))
 
     next_url = request.args.get("next", "")
@@ -685,7 +602,7 @@ def logout():
 
 @app.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
-    """Initiates password recovery with secure recovery link and verification code."""
+    """Initiates password recovery with direct reset link (no OTP required)."""
     if "user_id" in session:
         return redirect(url_for("dashboard"))
 
@@ -706,14 +623,13 @@ def forgot_password():
         token = secrets.token_urlsafe(32)
 
         if user and user.get("is_active"):
-            otp_code = database.generate_and_store_otp(email, purpose="forgot_password", expires_in_minutes=15)
             auth_utils.store_reset_token(email, token, expires_in_minutes=15)
             reset_url = url_for("reset_password", token=token, email=email, _external=True)
-            auth_utils.send_password_reset_email(email, reset_url=reset_url, otp_code=otp_code)
+            auth_utils.send_password_reset_email(email, reset_url=reset_url)
 
         session["reset_email"] = email
         session["reset_token"] = token
-        flash("If an account with that email exists, password recovery instructions have been dispatched.", "info")
+        flash("Password recovery instructions have been dispatched. Please set your new password below.", "info")
         return redirect(url_for("reset_password", token=token, email=email))
 
     return render_template("forgot_password.html")

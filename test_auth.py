@@ -230,24 +230,23 @@ def run_auth_tests():
     database.set_user_status(uid, 1)
 
     # -------------------------------------------------------------
-    # 7. Forgot Password & Reset Password Flow
+    # 7. Forgot Password & Reset Password Flow (Direct Link, No OTP)
     # -------------------------------------------------------------
-    print("\n[Phase 7] Testing Forgot Password with Token & OTP Flow...")
+    print("\n[Phase 7] Testing Forgot Password with Recovery Link (No OTP)...")
 
     # 7a. Initiate Forgot Password
     res_forgot = client.post("/forgot-password", data={
         "email": test_email
     }, follow_redirects=True)
     assert res_forgot.status_code == 200
-    print("  -> Forgot password initiated: recovery instructions dispatched PASS")
+    print("  -> Forgot password initiated: recovery link dispatched PASS")
 
-    # 7b. Capture Reset Data
+    # 7b. Capture Reset Link
     reset_data = auth_utils._LAST_TEST_OTPS.get(test_email)
     assert reset_data is not None
-    reset_otp = reset_data.get("otp")
     reset_url = reset_data.get("reset_url")
-    assert reset_otp is not None and len(reset_otp) == 6
-    print(f"  -> Captured Password Reset OTP: {reset_otp} PASS")
+    assert reset_url is not None and "reset-password" in reset_url
+    print(f"  -> Captured Password Reset URL: {reset_url} PASS")
 
     # 7c. Direct access to /reset-password via recovery URL / token
     res_verify_reset = client.get(reset_url)
@@ -301,21 +300,24 @@ def run_auth_tests():
     client.get("/logout")
 
     # -------------------------------------------------------------
-    # 9. OTP Expiration Verification
+    # 9. Verify Root Portal Endpoint (https://road-accident-data-analysis-system.onrender.com/)
     # -------------------------------------------------------------
-    print("\n[Phase 9] Testing OTP Expiration Logic...")
-    exp_code = database.generate_and_store_otp(test_email, purpose="signup", expires_in_minutes=5)
-    # Force expire in database
-    past_time = (datetime.now() - timedelta(minutes=10)).strftime("%Y-%m-%d %H:%M:%S")
-    database.execute_query(
-        "UPDATE otp_verifications SET expires_at = %s WHERE LOWER(email) = %s AND is_used = 0",
-        (past_time, test_email),
-        fetch="count"
-    )
-    is_valid, msg = database.verify_otp_attempt(test_email, exp_code, "signup")
-    assert not is_valid, "Expired OTP must be rejected"
-    assert "expired" in msg.lower(), f"Expected expiration message, got: {msg}"
-    print(f"  -> Expired OTP rejected with message: '{msg}' PASS")
+    print("\n[Phase 9] Testing Root Portal Endpoint ('/')...")
+    # Unauthenticated visitor to '/' directly receives the professional banking-style Login portal
+    res_root = client.get("/")
+    assert res_root.status_code == 200
+    assert b"Sign In" in res_root.data or b"Road Accident" in res_root.data
+    print("  -> Root '/' directly renders professional Login portal with HTTP 200 PASS")
+
+    # Authenticate directly via root POST
+    res_root_login = client.post("/", data={
+        "email": test_email,
+        "password": newer_pass
+    }, follow_redirects=False)
+    assert res_root_login.status_code == 302
+    assert res_root_login.location.endswith("/dashboard")
+    print("  -> Root POST authentication redirects to /dashboard PASS")
+    client.get("/logout")
 
     # -------------------------------------------------------------
     # 10. CSRF Protection Check
