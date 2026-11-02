@@ -1,0 +1,39 @@
+{% extends "auth_base.html" %}
+
+{% block title %}Sign In | AccidentRadar{% endblock %}
+{% block auth_title %}Welcome Back{% endblock %}
+{% block auth_subtitle %}Sign in to your analytical dashboard account{% endblock %}
+
+{% block auth_content %}
+<form method="POST" action="{{ url_for('login', next=request.args.get('next', '')) }}" class="auth-form" id="loginForm">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+  <div class="form-group">
+    <label for="email">Email Address</label>
+    <input type="email" name="email" id="email" class="form-control" placeholder="name@domain.com" value="{{ email or '' }}" required autofocus>
+  </div>
+
+  <div class="form-group">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+      <label for="password" style="margin-bottom: 0;">Password</label>
+      <a href="{{ url_for('forgot_password') }}" style="font-size: 0.8rem; color: var(--primary);">Forgot Password?</a>
+    </div>
+    <input type="password" name="password" id="password" class="form-control" placeholder="Enter your password" required>
+  </div>
+
+  <div class="form-group" style="margin-top: -6px;">
+    <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; font-size: 0.85rem; cursor: pointer; color: var(--text-muted);">
+      <input type="checkbox" name="remember_me" value="1" style="width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer;">
+      Remember Me
+    </label>
+  </div>
+
+  <button type="submit" class="btn btn-primary" id="loginSubmitBtn" style="width: 100%; justify-content: center; padding: 12px; font-size: 0.95rem;">
+    Sign In
+  </button>
+</form>
+{% endblock %}
+
+{% block auth_footer %}
+Don't have an account yet? <a href="{{ url_for('signup') }}">Create Account</a>
+{% endblock %}

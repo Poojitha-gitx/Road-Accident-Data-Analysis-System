@@ -8,6 +8,7 @@
     <h2>Accident Surveillance Records</h2>
     <p>Complete lifecycle management: Create, Read, Update, Delete, and Batch CSV Ingestion</p>
   </div>
+  {% if current_user and current_user.role == 'admin' %}
   <div class="action-buttons">
     <button type="button" class="btn btn-secondary" data-modal-target="importCsvModal">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -25,6 +26,7 @@
       Add Accident Record
     </button>
   </div>
+  {% endif %}
 </div>
 
 <!-- Filter & Search Toolbar -->
@@ -138,7 +140,9 @@
           <th>Vehicle Type</th>
           <th>Severity Level</th>
           <th>Weather</th>
+          {% if current_user and current_user.role == 'admin' %}
           <th style="text-align: right;">Actions</th>
+          {% endif %}
         </tr>
       </thead>
       <tbody>
@@ -163,6 +167,7 @@
                 {% endif %}
               </td>
               <td><span class="badge badge-weather">{{ r.weather }}</span></td>
+              {% if current_user and current_user.role == 'admin' %}
               <td style="text-align: right; white-space: nowrap;">
                 <button type="button" class="btn btn-secondary btn-sm btn-edit-record" data-id="{{ r.accident_id }}" title="Edit Record">
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -178,11 +183,12 @@
                   </svg>
                 </button>
               </td>
+              {% endif %}
             </tr>
           {% endfor %}
         {% else %}
           <tr>
-            <td colspan="9" style="text-align: center; padding: 48px 24px; color: var(--text-muted);">
+            <td colspan="{% if current_user and current_user.role == 'admin' %}9{% else %}8{% endif %}" style="text-align: center; padding: 48px 24px; color: var(--text-muted);">
               <div style="max-width: 440px; margin: 0 auto;">
                 <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 12px; color: var(--severity-serious);">
                   <circle cx="11" cy="11" r="8"></circle>
@@ -202,9 +208,12 @@
                     Reset Filters
                   </a>
                 {% else %}
+                  {% if current_user and current_user.role == 'admin' %}
                   <form method="POST" action="{{ url_for('seed_demo') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <button type="submit" class="btn btn-primary btn-sm">Seed Demonstration Data</button>
                   </form>
+                  {% endif %}
                 {% endif %}
               </div>
             </td>
@@ -245,6 +254,7 @@
      MODALS
      ======================================================== -->
 
+{% if current_user and current_user.role == 'admin' %}
 <!-- 1. Add Accident Record Modal -->
 <div class="modal-backdrop" id="addRecordModal">
   <div class="modal-box">
@@ -253,6 +263,7 @@
       <button type="button" class="modal-close">&times;</button>
     </div>
     <form method="POST" action="{{ url_for('add_record') }}" id="addRecordForm">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <div class="modal-body">
         <div class="form-group">
           <label>Geographic Region *</label>
@@ -320,6 +331,7 @@
       <button type="button" class="modal-close">&times;</button>
     </div>
     <form method="POST" id="editRecordForm" action="">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <div class="modal-body">
         <div class="form-group">
           <label>Geographic Region *</label>
@@ -387,6 +399,7 @@
       <button type="button" class="modal-close">&times;</button>
     </div>
     <form method="POST" id="deleteRecordForm" action="">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <div class="modal-body">
         <p>Are you sure you wish to permanently delete this accident record?</p>
         <p style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.85rem;" id="delete_record_summary">
@@ -409,6 +422,7 @@
       <button type="button" class="modal-close">&times;</button>
     </div>
     <form method="POST" action="{{ url_for('import_csv') }}" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <div class="modal-body">
         <p style="font-size: 0.85rem; color: var(--text-muted);">
           Upload a structured CSV file. The system will strictly validate each record, insert new geographical locations, and report any invalid rows or schema violations.
@@ -452,4 +466,5 @@
     </form>
   </div>
 </div>
+{% endif %}
 {% endblock %}

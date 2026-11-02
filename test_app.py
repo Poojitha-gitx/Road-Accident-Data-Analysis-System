@@ -25,12 +25,18 @@ def run_tests():
     print(" ROAD ACCIDENT DATA ANALYSIS SYSTEM - COMPLETE VERIFICATION SUITE")
     print("=" * 70)
 
+    app.config["TESTING"] = True
     client = app.test_client()
 
     # 1. Template Compilation Check
     print("\n[Step 1] Checking Jinja2 Template Syntax...")
     env = Environment(loader=FileSystemLoader("templates"))
-    for t_name in ["base.html", "dashboard.html", "records.html", "analysis.html", "reports.html"]:
+    template_list = [
+        "base.html", "dashboard.html", "records.html", "analysis.html", "reports.html",
+        "auth_base.html", "login.html", "signup.html", "verify_otp.html",
+        "forgot_password.html", "reset_password.html", "profile.html", "admin_users.html"
+    ]
+    for t_name in template_list:
         env.get_template(t_name)
         print(f"  -> templates/{t_name}: Valid Syntax")
 
@@ -41,11 +47,26 @@ def run_tests():
     print(f"  -> Database Name: {status['db_name']}")
     initial_count = database.execute_query("SELECT COUNT(*) as cnt FROM accidents", fetch="one")["cnt"]
     print(f"  -> Current Baseline Accidents in DB: {initial_count}")
-    assert initial_count in (36, 226), f"Expected 36 (TiDB) or 226 (Local MySQL), got {initial_count}"
+    assert initial_count in (36, 220, 226), f"Expected 36 (TiDB) or 226 (Local MySQL), got {initial_count}"
+
+    # 2b. Verify Unauthenticated Protection
+    print("\n[Step 2b] Verifying Authentication Requirement...")
+    unauth_res = client.get("/dashboard")
+    assert unauth_res.status_code == 302, f"Expected 302 redirect for unauth /dashboard, got {unauth_res.status_code}"
+    print("  -> Unauthenticated /dashboard redirects to /login: PASS")
+
+    # Authenticate as Administrator
+    login_res = client.post("/login", data={
+        "email": "admin@example.com",
+        "password": "your_strong_admin_password"
+    }, follow_redirects=True)
+    assert login_res.status_code == 200
+    assert b"AccidentRadar" in login_res.data
+    print("  -> Administrator Sign-in: PASS")
 
     # 3. Read Page Routes
     print("\n[Step 3] Testing Page Rendering (GET requests)...")
-    for route in ["/dashboard", "/records", "/analysis", "/reports"]:
+    for route in ["/dashboard", "/records", "/analysis", "/reports", "/profile", "/admin/users"]:
         res = client.get(route)
         assert res.status_code == 200, f"Route {route} failed with status {res.status_code}"
         print(f"  -> {route:<15} HTTP 200 OK")

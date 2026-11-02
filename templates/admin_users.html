@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}User Management | AccidentRadar{% endblock %}
+
+{% block content %}
+<div class="top-header">
+  <div class="page-title-group">
+    <h2>User & Role Access Management</h2>
+    <p>Administer registered user accounts, control authorization roles, and toggle access states</p>
+  </div>
+  <div class="action-buttons">
+    <div class="db-badge" style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); padding: 8px 14px; border-radius: var(--radius-md);">
+      <span style="font-weight: 700; color: #93c5fd;">Total Users: {{ users|length }}</span>
+    </div>
+  </div>
+</div>
+
+<div class="table-card">
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>User ID</th>
+          <th>Full Name</th>
+          <th>Email Address</th>
+          <th>Role</th>
+          <th>Account Status</th>
+          <th>Registration Date</th>
+          <th style="text-align: right;">Administrative Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+          <tr>
+            <td>
+              <span style="font-family: 'JetBrains Mono', monospace; color: var(--text-dim); font-size: 0.8rem;">
+                #{{ u.user_id }}
+              </span>
+            </td>
+            <td>
+              <strong>{{ u.full_name }}</strong>
+              {% if u.user_id == current_user.user_id %}
+                <span style="font-size: 0.7rem; color: var(--accent-cyan); margin-left: 6px;">(You)</span>
+              {% endif %}
+            </td>
+            <td>{{ u.email }}</td>
+            <td>
+              {% if u.role == 'admin' %}
+                <span class="badge badge-fatal">Admin</span>
+              {% else %}
+                <span class="badge badge-vehicle">User</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if u.is_active %}
+                <span class="badge badge-minor">Active</span>
+              {% else %}
+                <span class="badge" style="background: rgba(100, 116, 139, 0.2); border-color: rgba(100, 116, 139, 0.4); color: #94a3b8;">Inactive</span>
+              {% endif %}
+            </td>
+            <td>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: var(--text-dim);">
+                {{ u.created_at }}
+              </span>
+            </td>
+            <td style="text-align: right; white-space: nowrap;">
+              {% if u.user_id == current_user.user_id %}
+                <span style="font-size: 0.75rem; color: var(--text-dim); font-style: italic;">Current Session</span>
+              {% else %}
+                <!-- Toggle Status Button Form -->
+                <form method="POST" action="{{ url_for('admin_toggle_user_status', user_id=u.user_id) }}" style="display: inline-block; margin-right: 6px;">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  {% if u.is_active %}
+                    <button type="submit" class="btn btn-secondary btn-sm" style="color: #f87171; border-color: rgba(239, 68, 68, 0.4);" title="Deactivate user account">
+                      Deactivate
+                    </button>
+                  {% else %}
+                    <button type="submit" class="btn btn-secondary btn-sm" style="color: #34d399; border-color: rgba(16, 185, 129, 0.4);" title="Activate user account">
+                      Activate
+                    </button>
+                  {% endif %}
+                </form>
+
+                <!-- Change Role Form -->
+                <form method="POST" action="{{ url_for('admin_change_user_role', user_id=u.user_id) }}" style="display: inline-block;">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  {% if u.role == 'admin' %}
+                    <input type="hidden" name="new_role" value="user">
+                    <button type="submit" class="btn btn-secondary btn-sm" title="Demote admin to normal user">
+                      Demote to User
+                    </button>
+                  {% else %}
+                    <input type="hidden" name="new_role" value="admin">
+                    <button type="submit" class="btn btn-secondary btn-sm" style="color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);" title="Promote user to administrator">
+                      Promote to Admin
+                    </button>
+                  {% endif %}
+                </form>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

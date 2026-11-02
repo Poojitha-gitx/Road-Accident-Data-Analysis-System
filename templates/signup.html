@@ -1,0 +1,43 @@
+{% extends "auth_base.html" %}
+
+{% block title %}Create Account | AccidentRadar{% endblock %}
+{% block card_class %}auth-card-wide{% endblock %}
+{% block auth_title %}Create New Account{% endblock %}
+{% block auth_subtitle %}Join the Road Accident Data Analysis System{% endblock %}
+
+{% block auth_content %}
+<form method="POST" action="{{ url_for('signup') }}" class="auth-form" id="signupForm">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+  <div class="form-group">
+    <label for="full_name">Full Name *</label>
+    <input type="text" name="full_name" id="full_name" class="form-control" placeholder="e.g. Jane Doe" value="{{ full_name or '' }}" required autofocus>
+  </div>
+
+  <div class="form-group">
+    <label for="email">Email Address *</label>
+    <input type="email" name="email" id="email" class="form-control" placeholder="name@domain.com" value="{{ email or '' }}" required>
+    <small style="font-size: 0.74rem; color: var(--text-dim); display: block; margin-top: 4px;">A 6-digit verification code will be sent to this email.</small>
+  </div>
+
+  <div class="filter-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 0; gap: 12px;">
+    <div class="form-group">
+      <label for="password">Password *</label>
+      <input type="password" name="password" id="password" class="form-control" placeholder="At least 6 characters" minlength="6" required>
+    </div>
+
+    <div class="form-group">
+      <label for="confirm_password">Confirm Password *</label>
+      <input type="password" name="confirm_password" id="confirm_password" class="form-control" placeholder="Re-enter password" minlength="6" required>
+    </div>
+  </div>
+
+  <button type="submit" class="btn btn-primary" id="signupSubmitBtn" style="width: 100%; justify-content: center; padding: 12px; font-size: 0.95rem; margin-top: 6px;">
+    Create Account
+  </button>
+</form>
+{% endblock %}
+
+{% block auth_footer %}
+Already have an account? <a href="{{ url_for('login') }}">Sign In</a>
+{% endblock %}

@@ -7,8 +7,9 @@ An end-to-end, full-stack analytical web platform built to record, monitor, anal
 
 ## 🌟 Key Highlights
 
-- **Backend Architecture:** Python Flask RESTful backend with modular data and query layers.
-- **Database Engine:** MySQL relational database utilizing **parameterized SQL queries (`%s`)** to completely prevent SQL Injection vulnerabilities, backed by environment variable credentials (`.env`) and automatic schema initialization.
+- **Backend Architecture:** Python Flask RESTful backend with modular data, authentication, and query layers.
+- **Authentication & RBAC:** Secure session authentication with Werkzeug password hashing, **6-digit email OTP verification via Gmail SMTP**, 5-minute code expiration, resend cooldowns, attempt throttling, CSRF protection, and two-tier role-based access control (**Admin** vs **User**).
+- **Database Engine:** MySQL relational database (with seamless SQLite fallback) utilizing **parameterized SQL queries (`%s`)** to completely prevent SQL Injection vulnerabilities, backed by environment variable credentials (`.env`) and automatic schema initialization.
 - **Advanced Data Processing:** **Pandas** for multi-dimensional data grouping, cross-tabulations, and time-series feature engineering; **NumPy** for descriptive statistical modeling (mean, median, standard deviation, interquartile range).
 - **Analytical Chart Generation:** Dynamic **Matplotlib** visualizations rendered on-the-fly and streamed directly as high-resolution PNG charts.
 - **Frontend Design:** Vanilla CSS with custom properties, dark slate glassmorphism, responsive sidebar navigation, interactive modals, and modern typography (**Outfit** & **Plus Jakarta Sans**).
@@ -82,6 +83,41 @@ CREATE TABLE IF NOT EXISTS accidents (
 );
 ```
 
+### 3. `users` Table
+Stores user accounts with role-based access control (`admin` / `user`):
+```sql
+CREATE TABLE IF NOT EXISTS users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    full_name VARCHAR(150) NOT NULL,
+    email VARCHAR(191) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    role VARCHAR(20) NOT NULL DEFAULT 'user',
+    is_active TINYINT(1) NOT NULL DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_user_email (email),
+    INDEX idx_user_role (role)
+);
+```
+
+### 4. `otp_verifications` Table
+Stores hashed 6-digit one-time passwords for signup and password reset verification:
+```sql
+CREATE TABLE IF NOT EXISTS otp_verifications (
+    otp_id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(191) NOT NULL,
+    otp_hash VARCHAR(255) NOT NULL,
+    purpose VARCHAR(50) NOT NULL,
+    expires_at DATETIME NOT NULL,
+    attempts INT NOT NULL DEFAULT 0,
+    max_attempts INT NOT NULL DEFAULT 5,
+    is_used TINYINT(1) NOT NULL DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_otp_email_purpose (email, purpose),
+    INDEX idx_otp_expires (expires_at)
+);
+```
+
 ---
 
 ## 🚀 Setup & Installation Guide
@@ -89,7 +125,7 @@ CREATE TABLE IF NOT EXISTS accidents (
 ### Step 1: Open Terminal in Project Folder
 Ensure your shell is positioned in the project root directory:
 ```powershell
-cd "c:\Users\pooji\OneDrive\Desktop\Road Accident Data Analysis System"
+cd "Road-Accident-Data-Analysis-System"
 ```
 
 ### Step 2: Install Required Python Packages
@@ -103,8 +139,9 @@ Create your `.env` file from the provided `.env.example`:
 ```powershell
 copy .env.example .env
 ```
-Open `.env` and set your local MySQL credentials:
+Open `.env` and set your credentials:
 ```ini
+# Database Configuration (MySQL or SQLite fallback)
 DB_TYPE=mysql
 DB_HOST=localhost
 DB_PORT=3306
@@ -112,11 +149,29 @@ DB_USER=root
 DB_PASSWORD=your_actual_mysql_password
 DB_NAME=accident_analysis_db
 
-SECRET_KEY=your_flask_secret_key_here
-FLASK_DEBUG=True
+# Initial Administrator Account (Auto-created on first run if missing)
+ADMIN_NAME=System Administrator
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=your_strong_admin_password
+
+# Gmail SMTP Configuration for 6-Digit Email OTP Verification
+MAIL_SERVER=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USE_TLS=True
+MAIL_USERNAME=yourgmail@gmail.com
+MAIL_PASSWORD=your_gmail_app_password
+
+# Flask Application Settings
+SECRET_KEY=road_accident_mini_project_secret_key_2026
+FLASK_DEBUG=False
 PORT=5000
 ```
-> **Automatic Schema Initializer:** On startup, the application verifies the database connection, automatically creates `accident_analysis_db` if not present, and initializes tables.
+
+> **Gmail App Password Instructions:**
+> 1. Go to your Google Account Settings -> **Security**.
+> 2. Enable **2-Step Verification** (if not already enabled).
+> 3. Search for **App passwords** in the top search bar.
+> 4. Create a new App Password named `AccidentRadar` and paste the generated 16-character code into `MAIL_PASSWORD`.
 
 ### Step 4: Run the Application Server
 Start the Flask development server:
@@ -126,6 +181,16 @@ python app.py
 Open your web browser and navigate to:
 ```
 http://localhost:5000
+```
+
+### Step 5: Run Verification Test Suites
+Run the automated test suites to verify that both the analytical system and authentication work flawlessly:
+```powershell
+# 1. Complete Web System Verification Suite
+python test_app.py
+
+# 2. Authentication, OTP, and Role-Based Access Control Test Suite
+python test_auth.py
 ```
 
 ---

@@ -5,7 +5,9 @@ Supports MySQL with parameterized queries and seamless SQLite fallback.
 
 import os
 import sqlite3
-from datetime import datetime
+import secrets
+from datetime import datetime, timedelta
+from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -182,6 +184,8 @@ def execute_query(sql, params=None, fetch="all"):
     conn, driver = get_db_connection()
     params = params or ()
 
+    is_mutating = sql.strip().upper().startswith(("INSERT", "UPDATE", "DELETE", "REPLACE"))
+
     if driver == "sqlite":
         # Convert %s placeholder to ? for SQLite parameterization
         sql_converted = sql.replace("%s", "?")
@@ -199,6 +203,8 @@ def execute_query(sql, params=None, fetch="all"):
             else:
                 conn.commit()
                 result = cursor.rowcount
+            if is_mutating:
+                conn.commit()
             return result
         except Exception:
             try:
@@ -229,6 +235,8 @@ def execute_query(sql, params=None, fetch="all"):
             else:
                 conn.commit()
                 result = cursor.rowcount
+            if is_mutating:
+                conn.commit()
             return result
         except Exception:
             try:
@@ -244,7 +252,8 @@ def execute_query(sql, params=None, fetch="all"):
 
 def init_db():
     """
-    Initializes tables for locations and accidents in MySQL or SQLite.
+    Initializes tables for locations and accidents in MySQL or SQLite,
+    and creates users and otp_verifications tables for role-based authentication.
     """
     conn, driver = get_db_connection()
 
@@ -277,6 +286,37 @@ def init_db():
                 INDEX idx_vehicle (vehicle_type)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
             """)
+
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                user_id INT AUTO_INCREMENT PRIMARY KEY,
+                full_name VARCHAR(150) NOT NULL,
+                email VARCHAR(191) NOT NULL UNIQUE,
+                password_hash VARCHAR(255) NOT NULL,
+                role VARCHAR(20) NOT NULL DEFAULT 'user',
+                is_active TINYINT(1) NOT NULL DEFAULT 1,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                INDEX idx_user_email (email),
+                INDEX idx_user_role (role)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            """)
+
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS otp_verifications (
+                otp_id INT AUTO_INCREMENT PRIMARY KEY,
+                email VARCHAR(191) NOT NULL,
+                otp_hash VARCHAR(255) NOT NULL,
+                purpose VARCHAR(50) NOT NULL,
+                expires_at DATETIME NOT NULL,
+                attempts INT NOT NULL DEFAULT 0,
+                max_attempts INT NOT NULL DEFAULT 5,
+                is_used TINYINT(1) NOT NULL DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_otp_email_purpose (email, purpose),
+                INDEX idx_otp_expires (expires_at)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            """)
         finally:
             cursor.close()
             conn.close()
@@ -305,10 +345,79 @@ def init_db():
                 FOREIGN KEY (location_id) REFERENCES locations(location_id)
             );
             """)
+
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                full_name TEXT NOT NULL,
+                email TEXT UNIQUE NOT NULL,
+                password_hash TEXT NOT NULL,
+                role TEXT NOT NULL DEFAULT 'user',
+                is_active INTEGER NOT NULL DEFAULT 1,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+            """)
+
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS otp_verifications (
+                otp_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                email TEXT NOT NULL,
+                otp_hash TEXT NOT NULL,
+                purpose TEXT NOT NULL,
+                expires_at TEXT NOT NULL,
+                attempts INTEGER NOT NULL DEFAULT 0,
+                max_attempts INTEGER NOT NULL DEFAULT 5,
+                is_used INTEGER NOT NULL DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+            """)
             conn.commit()
         finally:
             cursor.close()
             conn.close()
+
+    create_initial_admin()
+
+
+def create_initial_admin():
+    """
+    Creates the initial administrator account from environment variables if not present.
+    Ensures secure credentials, avoids duplicates, and never allows public admin escalation.
+    """
+    admin_name = os.getenv("ADMIN_NAME", "System Administrator").strip()
+    admin_email = os.getenv("ADMIN_EMAIL", "admin@example.com").strip().lower()
+    admin_password = os.getenv("ADMIN_PASSWORD", "your_strong_admin_password").strip()
+
+    if not admin_email or not admin_password:
+        return
+
+    try:
+        existing = execute_query(
+            "SELECT user_id, role, is_active FROM users WHERE LOWER(email) = LOWER(%s)",
+            (admin_email,),
+            fetch="one"
+        )
+
+        if not existing:
+            pwd_hash = generate_password_hash(admin_password)
+            execute_query(
+                """
+                INSERT INTO users (full_name, email, password_hash, role, is_active)
+                VALUES (%s, %s, %s, 'admin', 1)
+                """,
+                (admin_name, admin_email, pwd_hash),
+                fetch="insert_id"
+            )
+        else:
+            if existing.get("role") != "admin" or not existing.get("is_active"):
+                execute_query(
+                    "UPDATE users SET role = 'admin', is_active = 1 WHERE user_id = %s",
+                    (existing["user_id"],),
+                    fetch="count"
+                )
+    except Exception as e:
+        print(f"Notice: Initial admin bootstrap deferred ({e})")
 
 
 # ============================================================
@@ -627,3 +736,236 @@ def get_raw_records_for_df(filters=None):
     ORDER BY a.accident_datetime ASC
     """
     return execute_query(sql, tuple(params), fetch="all")
+
+
+# ============================================================
+# User Authentication & Role Management Layer
+# ============================================================
+
+def get_user_by_email(email):
+    """Retrieves user record by case-insensitive email."""
+    if not email:
+        return None
+    return execute_query(
+        "SELECT * FROM users WHERE LOWER(email) = LOWER(%s)",
+        (email.strip(),),
+        fetch="one"
+    )
+
+
+def get_user_by_id(user_id):
+    """Retrieves user record by user_id."""
+    if not user_id:
+        return None
+    return execute_query(
+        "SELECT * FROM users WHERE user_id = %s",
+        (user_id,),
+        fetch="one"
+    )
+
+
+def create_user(full_name, email, password_hash, role="user", is_active=1):
+    """Creates a new registered user in the database."""
+    return execute_query(
+        """
+        INSERT INTO users (full_name, email, password_hash, role, is_active)
+        VALUES (%s, %s, %s, %s, %s)
+        """,
+        (full_name.strip(), email.strip().lower(), password_hash, role, 1 if is_active else 0),
+        fetch="insert_id"
+    )
+
+
+def update_user_password(user_id, password_hash):
+    """Updates password hash for a given user_id."""
+    count = execute_query(
+        "UPDATE users SET password_hash = %s, updated_at = CURRENT_TIMESTAMP WHERE user_id = %s",
+        (password_hash, user_id),
+        fetch="count"
+    )
+    return count > 0
+
+
+def update_user_profile(user_id, full_name):
+    """Updates display name for user profile."""
+    count = execute_query(
+        "UPDATE users SET full_name = %s, updated_at = CURRENT_TIMESTAMP WHERE user_id = %s",
+        (full_name.strip(), user_id),
+        fetch="count"
+    )
+    return count > 0
+
+
+def get_all_users():
+    """Retrieves all registered users for administration."""
+    return execute_query(
+        "SELECT user_id, full_name, email, role, is_active, created_at, updated_at FROM users ORDER BY user_id ASC",
+        fetch="all"
+    )
+
+
+def set_user_status(user_id, is_active):
+    """Activates or deactivates a user account."""
+    count = execute_query(
+        "UPDATE users SET is_active = %s, updated_at = CURRENT_TIMESTAMP WHERE user_id = %s",
+        (1 if is_active else 0, user_id),
+        fetch="count"
+    )
+    return count > 0
+
+
+def set_user_role(user_id, role):
+    """Updates user authorization role ('user' or 'admin')."""
+    if role not in ("user", "admin"):
+        raise ValueError("Invalid role specified.")
+    count = execute_query(
+        "UPDATE users SET role = %s, updated_at = CURRENT_TIMESTAMP WHERE user_id = %s",
+        (role, user_id),
+        fetch="count"
+    )
+    return count > 0
+
+
+# ============================================================
+# OTP Verification Layer
+# ============================================================
+
+def generate_and_store_otp(email, purpose, expires_in_minutes=5):
+    """
+    Generates a secure 6-digit numeric OTP, hashes it, stores it in otp_verifications,
+    and returns the plain OTP string for email dispatch.
+    """
+    email_clean = email.strip().lower()
+    otp_code = f"{secrets.randbelow(900000) + 100000:06d}"
+    otp_hash = generate_password_hash(otp_code)
+
+    now_dt = datetime.now()
+    now_str = now_dt.strftime("%Y-%m-%d %H:%M:%S")
+    expires_at = now_dt + timedelta(minutes=expires_in_minutes)
+    expires_at_str = expires_at.strftime("%Y-%m-%d %H:%M:%S")
+
+    # Invalidate previous unverified OTPs for this email & purpose
+    execute_query(
+        "UPDATE otp_verifications SET is_used = 1 WHERE LOWER(email) = LOWER(%s) AND purpose = %s AND is_used = 0",
+        (email_clean, purpose),
+        fetch="count"
+    )
+
+    execute_query(
+        """
+        INSERT INTO otp_verifications (email, otp_hash, purpose, expires_at, created_at, attempts, max_attempts, is_used)
+        VALUES (%s, %s, %s, %s, %s, 0, 5, 0)
+        """,
+        (email_clean, otp_hash, purpose, expires_at_str, now_str),
+        fetch="insert_id"
+    )
+    return otp_code
+
+
+def check_otp_resend_cooldown(email, purpose, cooldown_seconds=60):
+    """
+    Checks if enough time has passed since the last OTP generation for this email and purpose.
+    Returns (can_resend: bool, remaining_seconds: int).
+    """
+    email_clean = email.strip().lower()
+    latest = execute_query(
+        """
+        SELECT created_at FROM otp_verifications
+        WHERE LOWER(email) = LOWER(%s) AND purpose = %s
+        ORDER BY otp_id DESC LIMIT 1
+        """,
+        (email_clean, purpose),
+        fetch="one"
+    )
+    if not latest or not latest.get("created_at"):
+        return True, 0
+
+    c_at = latest["created_at"]
+    if isinstance(c_at, str):
+        try:
+            c_at = datetime.strptime(c_at[:19], "%Y-%m-%d %H:%M:%S")
+        except ValueError:
+            return True, 0
+
+    elapsed = (datetime.now() - c_at).total_seconds()
+    if elapsed < cooldown_seconds:
+        return False, int(cooldown_seconds - elapsed)
+    return True, 0
+
+
+def verify_otp_attempt(email, entered_otp, purpose):
+    """
+    Verifies an entered OTP code against the latest active OTP record.
+    Returns (success: bool, message: str).
+    Handles attempt limiting, expiration, and one-time usage.
+    """
+    email_clean = email.strip().lower()
+    entered_clean = (entered_otp or "").strip()
+
+    latest = execute_query(
+        """
+        SELECT otp_id, otp_hash, expires_at, attempts, max_attempts, is_used
+        FROM otp_verifications
+        WHERE LOWER(email) = LOWER(%s) AND purpose = %s AND is_used = 0
+        ORDER BY otp_id DESC LIMIT 1
+        """,
+        (email_clean, purpose),
+        fetch="one"
+    )
+
+    if not latest:
+        return False, "No active verification code found. Please request a new OTP."
+
+    otp_id = latest["otp_id"]
+    max_attempts = latest.get("max_attempts", 5)
+    current_attempts = latest.get("attempts", 0)
+
+    # Check attempt threshold
+    if current_attempts >= max_attempts:
+        execute_query(
+            "UPDATE otp_verifications SET is_used = 1 WHERE otp_id = %s",
+            (otp_id,),
+            fetch="count"
+        )
+        return False, "Maximum incorrect verification attempts reached. Please request a new OTP."
+
+    # Check expiration
+    exp = latest["expires_at"]
+    if isinstance(exp, str):
+        try:
+            exp = datetime.strptime(exp[:19], "%Y-%m-%d %H:%M:%S")
+        except ValueError:
+            pass
+    if isinstance(exp, datetime) and datetime.now() > exp:
+        execute_query(
+            "UPDATE otp_verifications SET is_used = 1 WHERE otp_id = %s",
+            (otp_id,),
+            fetch="count"
+        )
+        return False, "Verification code has expired (valid for 5 minutes). Please request a new code."
+
+    # Validate OTP code hash
+    if check_password_hash(latest["otp_hash"], entered_clean):
+        execute_query(
+            "UPDATE otp_verifications SET is_used = 1 WHERE otp_id = %s",
+            (otp_id,),
+            fetch="count"
+        )
+        return True, "Verification successful."
+    else:
+        new_attempts = current_attempts + 1
+        rem = max_attempts - new_attempts
+        if rem <= 0:
+            execute_query(
+                "UPDATE otp_verifications SET attempts = %s, is_used = 1 WHERE otp_id = %s",
+                (new_attempts, otp_id),
+                fetch="count"
+            )
+            return False, "Incorrect verification code. Maximum attempts reached. Please request a new code."
+        else:
+            execute_query(
+                "UPDATE otp_verifications SET attempts = %s WHERE otp_id = %s",
+                (new_attempts, otp_id),
+                fetch="count"
+            )
+            return False, f"Incorrect verification code. You have {rem} attempt(s) remaining."
