@@ -1,43 +1,121 @@
 {% extends "auth_base.html" %}
 
-{% block title %}Create Account | AccidentRadar{% endblock %}
+{% block title %}Create Account — Road Accident Data Analysis System{% endblock %}
+{% block body_page %}signup{% endblock %}
 {% block card_class %}auth-card-wide{% endblock %}
-{% block auth_title %}Create New Account{% endblock %}
-{% block auth_subtitle %}Join the Road Accident Data Analysis System{% endblock %}
+{% block eyebrow %}ACCOUNT REGISTRATION{% endblock %}
+{% block heading %}Create Account{% endblock %}
+{% block intro_copy %}Register a new account to explore road accident trends, records, and safety intelligence.{% endblock %}
 
-{% block auth_content %}
-<form method="POST" action="{{ url_for('signup') }}" class="auth-form" id="signupForm">
+{% block content %}
+<form method="POST" action="{{ url_for('signup') }}" class="auth-form" id="signupForm" novalidate>
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-  <div class="form-group">
-    <label for="full_name">Full Name *</label>
-    <input type="text" name="full_name" id="full_name" class="form-control" placeholder="e.g. Jane Doe" value="{{ full_name or '' }}" required autofocus>
+  <div class="filter-field">
+    <label for="full_name">Full Name</label>
+    <input
+      id="full_name"
+      name="full_name"
+      type="text"
+      autocomplete="name"
+      maxlength="150"
+      placeholder="e.g. Jane Doe"
+      value="{{ full_name or '' }}"
+      required
+      autofocus
+    >
   </div>
 
-  <div class="form-group">
-    <label for="email">Email Address *</label>
-    <input type="email" name="email" id="email" class="form-control" placeholder="name@domain.com" value="{{ email or '' }}" required>
-    <small style="font-size: 0.74rem; color: var(--text-dim); display: block; margin-top: 4px;">A 6-digit verification code will be sent to this email.</small>
+  <div class="filter-field">
+    <label for="email">Email Address</label>
+    <input
+      id="email"
+      name="email"
+      type="email"
+      autocomplete="email"
+      maxlength="191"
+      placeholder="name@example.com"
+      value="{{ email or '' }}"
+      required
+    >
   </div>
 
-  <div class="filter-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 0; gap: 12px;">
-    <div class="form-group">
-      <label for="password">Password *</label>
-      <input type="password" name="password" id="password" class="form-control" placeholder="At least 6 characters" minlength="6" required>
+  <div class="form-row-2">
+    <div class="filter-field">
+      <label for="password">Password</label>
+      <div class="password-input-wrapper">
+        <input
+          id="password"
+          name="password"
+          type="password"
+          autocomplete="new-password"
+          minlength="6"
+          placeholder="Min 6 characters"
+          required
+        >
+        <button
+          type="button"
+          class="password-toggle-btn"
+          data-target="password"
+          aria-label="Toggle password visibility"
+        >
+          <svg class="icon-show" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <svg class="icon-hide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+            <line x1="1" y1="1" x2="23" y2="23"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="strength-meter-wrap">
+        <div class="strength-meter">
+          <div class="strength-meter-fill" id="strengthFill"></div>
+        </div>
+        <div class="strength-text" id="strengthText">Strength: None</div>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label for="confirm_password">Confirm Password *</label>
-      <input type="password" name="confirm_password" id="confirm_password" class="form-control" placeholder="Re-enter password" minlength="6" required>
+    <div class="filter-field">
+      <label for="confirm_password">Confirm Password</label>
+      <div class="password-input-wrapper">
+        <input
+          id="confirm_password"
+          name="confirm_password"
+          type="password"
+          autocomplete="new-password"
+          minlength="6"
+          placeholder="Re-enter password"
+          required
+        >
+        <button
+          type="button"
+          class="password-toggle-btn"
+          data-target="confirm_password"
+          aria-label="Toggle password visibility"
+        >
+          <svg class="icon-show" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <svg class="icon-hide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+            <line x1="1" y1="1" x2="23" y2="23"></line>
+          </svg>
+        </button>
+      </div>
+      <div id="pwdMatchError" class="field-error-text" style="display:none;">Passwords do not match</div>
     </div>
   </div>
 
-  <button type="submit" class="btn btn-primary" id="signupSubmitBtn" style="width: 100%; justify-content: center; padding: 12px; font-size: 0.95rem; margin-top: 6px;">
-    Create Account
+  <button class="button button-primary" type="submit" id="signupSubmitBtn" style="margin-top: .4rem;">
+    <span class="button-spinner" aria-hidden="true"></span>
+    <span class="button-text">Create Account</span>
   </button>
 </form>
 {% endblock %}
 
-{% block auth_footer %}
+{% block auth_note %}
 Already have an account? <a href="{{ url_for('login') }}">Sign In</a>
 {% endblock %}

@@ -1,41 +1,46 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}AccidentRadar - Authentication{% endblock %}</title>
-  
-  <!-- Modern Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  
-  <!-- Stylesheet -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Road Accident Data Analysis System - Analytical and Geospatial Safety Intelligence Workspace.">
+  <title>{% block title %}Sign In — Road Accident Data Analysis System{% endblock %}</title>
+
+  <!-- Modern Fonts & Authentication Stylesheet (Banking-Inspired) -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
   <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
-<body style="background-color: var(--bg-dark); color: var(--text-main);">
-  <div class="auth-wrapper">
-    <div class="auth-card {% block card_class %}{% endblock %}">
-      <!-- Brand Header -->
-      <div class="auth-header">
-        <div class="brand-icon">
-          <svg viewBox="0 0 24 24">
-            <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
-          </svg>
-        </div>
-        <h2>{% block auth_title %}AccidentRadar{% endblock %}</h2>
-        <p>{% block auth_subtitle %}Road Accident Data Analysis System{% endblock %}</p>
-      </div>
+<body data-page="{% block body_page %}auth{% endblock %}">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
 
-      <!-- Flash Notifications -->
+  <!-- Banking-Style Top Navigation Header -->
+  <header class="site-header">
+    <a class="brand" href="{{ url_for('login') }}" aria-label="Road Accident Data Analysis System home">
+      <span class="brand-mark" aria-hidden="true">RA</span>
+      <span class="brand-name">Road Accident<br>Data Analysis System</span>
+    </a>
+
+    <span class="environment-label">
+      <span class="environment-dot" aria-hidden="true"></span>
+      Road Safety Analytics Workspace
+    </span>
+  </header>
+
+  <!-- Main Shell & Centered Card -->
+  <main id="main-content" class="page-shell">
+    <section class="auth-card {% block card_class %}{% endblock %}" aria-labelledby="auth-heading">
+      <p class="eyebrow">{% block eyebrow %}SYSTEM ACCESS{% endblock %}</p>
+      <h1 id="auth-heading">{% block heading %}Sign In{% endblock %}</h1>
+      <p class="intro-copy">{% block intro_copy %}Enter your registered credentials to access the analytical accident workspace.{% endblock %}</p>
+
+      <!-- Flash Alert Notifications -->
       <div class="flash-container">
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
             {% for category, message in messages %}
-              <div class="flash-alert {{ category }}">
+              <div class="message message-{{ 'error' if category == 'danger' else category }}">
                 <span>{{ message }}</span>
-                <button type="button" class="modal-close" onclick="this.parentElement.remove()" style="font-size: 1.1rem; cursor: pointer; background: transparent; border: none; color: inherit;">&times;</button>
+                <button type="button" class="message-close-btn" onclick="this.parentElement.remove()" aria-label="Dismiss">&times;</button>
               </div>
             {% endfor %}
           {% endif %}
@@ -43,16 +48,21 @@
       </div>
 
       <!-- Form Content -->
-      {% block auth_content %}{% endblock %}
+      {% block content %}{% endblock %}
 
-      <!-- Footer -->
-      <div class="auth-footer">
-        {% block auth_footer %}{% endblock %}
+      <!-- Auth Card Notes / Switch Links -->
+      <div class="auth-note">
+        {% block auth_note %}{% endblock %}
       </div>
-    </div>
-  </div>
+    </section>
 
-  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <!-- Professional Banking-Style Page Footer -->
+    <footer class="page-footer">
+      <p>Road Accident Data Analysis System &bull; Dedicated Analytical & Spatial Safety Workspace &bull; For official research and safety planning</p>
+    </footer>
+  </main>
+
+  <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
   {% block scripts %}{% endblock %}
 </body>
 </html>

@@ -50,9 +50,9 @@ def run_auth_tests():
     print(f"  -> Default Admin: {admin['email']} (Role: {admin['role']}, ID: {admin['user_id']}) PASS")
 
     # -------------------------------------------------------------
-    # 2. Public Signup Flow & OTP Verification
+    # 2. Public Signup Flow & Role Assignment
     # -------------------------------------------------------------
-    print("\n[Phase 2] Testing User Signup & OTP Verification...")
+    print("\n[Phase 2] Testing User Signup & Role Assignment...")
     test_email = "testuser@example.com"
     test_pass = "SecurePass123!"
 
@@ -61,7 +61,27 @@ def run_auth_tests():
     if existing:
         database.execute_query("DELETE FROM users WHERE LOWER(email) = %s", (test_email,), fetch="count")
 
-    # 2a. Signup submission
+    # 2a. Password length validation
+    res_short = client.post("/signup", data={
+        "full_name": "Test Analyst",
+        "email": test_email,
+        "password": "123",
+        "confirm_password": "123"
+    }, follow_redirects=True)
+    assert b"at least 6 characters" in res_short.data.lower()
+    print("  -> Short password rejected PASS")
+
+    # 2b. Password mismatch validation
+    res_mismatch = client.post("/signup", data={
+        "full_name": "Test Analyst",
+        "email": test_email,
+        "password": test_pass,
+        "confirm_password": "DifferentPassword!"
+    }, follow_redirects=True)
+    assert b"passwords do not match" in res_mismatch.data.lower()
+    print("  -> Password mismatch rejected PASS")
+
+    # 2c. Successful signup submission
     res_signup = client.post("/signup", data={
         "full_name": "Test Analyst",
         "email": test_email,
@@ -69,56 +89,17 @@ def run_auth_tests():
         "confirm_password": test_pass
     }, follow_redirects=True)
     assert res_signup.status_code == 200
-    assert b"verification code" in res_signup.data.lower()
-    print("  -> Signup initiated: OTP dispatched and pending session created PASS")
+    assert b"account created successfully" in res_signup.data.lower() or b"sign in" in res_signup.data.lower()
+    print("  -> Valid signup created account and redirected to login PASS")
 
-    # Verify user is NOT yet created in database before OTP verification
-    user_pre = database.get_user_by_email(test_email)
-    assert user_pre is None, "Account must NOT be created before OTP verification!"
-    print("  -> Verified user is NOT created in DB prior to OTP verification PASS")
-
-    # Retrieve generated OTP from test capture
-    otp_code = auth_utils.get_last_test_otp(test_email)
-    assert otp_code is not None and len(otp_code) == 6, f"Invalid OTP generated: {otp_code}"
-    print(f"  -> Captured 6-digit OTP: {otp_code} PASS")
-
-    # 2b. Test Incorrect OTP attempt
-    res_bad_otp = client.post("/verify-otp?purpose=signup", data={
-        "email": test_email,
-        "purpose": "signup",
-        "otp_code": "000000"
-    }, follow_redirects=True)
-    assert res_bad_otp.status_code == 200
-    assert b"incorrect verification code" in res_bad_otp.data.lower()
-    print("  -> Incorrect OTP rejected with attempt counter decrement PASS")
-
-    # 2c. Test Resend Cooldown
-    res_cooldown = client.post("/resend-otp", data={
-        "email": test_email,
-        "purpose": "signup"
-    }, follow_redirects=True)
-    assert res_cooldown.status_code == 200
-    assert b"please wait" in res_cooldown.data.lower()
-    print("  -> 60-second OTP resend cooldown enforced PASS")
-
-    # 2d. Test Correct OTP verification
-    res_verify = client.post("/verify-otp?purpose=signup", data={
-        "email": test_email,
-        "purpose": "signup",
-        "otp_code": otp_code
-    }, follow_redirects=True)
-    assert res_verify.status_code == 200
-    assert b"account successfully created" in res_verify.data.lower() or b"sign in" in res_verify.data.lower()
-    print("  -> Correct OTP accepted and redirected to login PASS")
-
-    # Verify user is now created in DB with 'user' role
+    # Verify user is now created in DB with 'user' role automatically and is active
     user_post = database.get_user_by_email(test_email)
-    assert user_post is not None, "User should be created in DB after OTP verification"
+    assert user_post is not None, "User should be created in DB after signup"
     assert user_post["role"] == "user", "Public signup must always assign role 'user'"
     assert user_post["is_active"] == 1, "User should be active"
     print(f"  -> User account confirmed in DB (ID: {user_post['user_id']}, Role: {user_post['role']}) PASS")
 
-    # 2e. Test Duplicate Email Prevention
+    # 2d. Duplicate Email Prevention
     res_dup = client.post("/signup", data={
         "full_name": "Test Analyst Duplicate",
         "email": test_email,
@@ -251,33 +232,32 @@ def run_auth_tests():
     # -------------------------------------------------------------
     # 7. Forgot Password & Reset Password Flow
     # -------------------------------------------------------------
-    print("\n[Phase 7] Testing Forgot Password with OTP Flow...")
+    print("\n[Phase 7] Testing Forgot Password with Token & OTP Flow...")
 
     # 7a. Initiate Forgot Password
     res_forgot = client.post("/forgot-password", data={
         "email": test_email
     }, follow_redirects=True)
     assert res_forgot.status_code == 200
-    print("  -> Forgot password initiated: OTP dispatched PASS")
+    print("  -> Forgot password initiated: recovery instructions dispatched PASS")
 
-    # 7b. Capture Reset OTP
-    reset_otp = auth_utils.get_last_test_otp(test_email)
+    # 7b. Capture Reset Data
+    reset_data = auth_utils._LAST_TEST_OTPS.get(test_email)
+    assert reset_data is not None
+    reset_otp = reset_data.get("otp")
+    reset_url = reset_data.get("reset_url")
     assert reset_otp is not None and len(reset_otp) == 6
     print(f"  -> Captured Password Reset OTP: {reset_otp} PASS")
 
-    # 7c. Verify Reset OTP
-    res_verify_reset = client.post("/verify-otp?purpose=forgot_password", data={
-        "email": test_email,
-        "purpose": "forgot_password",
-        "otp_code": reset_otp
-    }, follow_redirects=True)
+    # 7c. Direct access to /reset-password via recovery URL / token
+    res_verify_reset = client.get(reset_url)
     assert res_verify_reset.status_code == 200
-    assert b"new password" in res_verify_reset.data.lower()
-    print("  -> Reset OTP verified, navigated to /reset-password PASS")
+    assert b"Set New Password" in res_verify_reset.data or b"new password" in res_verify_reset.data.lower()
+    print("  -> Recovery link navigated to /reset-password PASS")
 
     # 7d. Submit New Password
     new_test_pass = "BrandNewSecret2026!"
-    res_new_pass = client.post("/reset-password", data={
+    res_new_pass = client.post(reset_url, data={
         "password": new_test_pass,
         "confirm_password": new_test_pass
     }, follow_redirects=True)

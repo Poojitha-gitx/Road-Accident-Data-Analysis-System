@@ -10,14 +10,60 @@
   </div>
   <div class="action-buttons">
     <div class="db-badge" style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); padding: 8px 14px; border-radius: var(--radius-md);">
-      <span style="font-weight: 700; color: #93c5fd;">Total Users: {{ users|length }}</span>
+      <span style="font-weight: 700; color: #93c5fd;" id="userCountSummary">Total Users: {{ users|length }}</span>
+    </div>
+  </div>
+</div>
+
+<!-- Search & Filtering Toolbar -->
+<div class="filter-card" style="margin-bottom: 20px; padding: 16px 20px;">
+  <div style="display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end;">
+    <div style="flex: 2 1 240px; min-width: 200px;">
+      <label for="userSearchInput" style="display: block; font-size: 0.76rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">
+        Search Users (ID, Name, Email)
+      </label>
+      <input 
+        type="text" 
+        id="userSearchInput" 
+        class="form-control" 
+        placeholder="Type to filter users..." 
+        style="height: 38px; font-size: 0.88rem;"
+      >
+    </div>
+
+    <div style="flex: 1 1 140px; min-width: 130px;">
+      <label for="roleFilterSelect" style="display: block; font-size: 0.76rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">
+        Filter by Role
+      </label>
+      <select id="roleFilterSelect" class="form-control" style="height: 38px; font-size: 0.88rem;">
+        <option value="all">All Roles</option>
+        <option value="admin">Administrator</option>
+        <option value="user">Normal User</option>
+      </select>
+    </div>
+
+    <div style="flex: 1 1 140px; min-width: 130px;">
+      <label for="statusFilterSelect" style="display: block; font-size: 0.76rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">
+        Filter by Status
+      </label>
+      <select id="statusFilterSelect" class="form-control" style="height: 38px; font-size: 0.88rem;">
+        <option value="all">All Statuses</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+      </select>
+    </div>
+
+    <div style="flex: 0 0 auto;">
+      <button type="button" class="btn btn-secondary" id="clearUserFiltersBtn" style="height: 38px;">
+        Reset Filters
+      </button>
     </div>
   </div>
 </div>
 
 <div class="table-card">
   <div class="table-responsive">
-    <table class="data-table">
+    <table class="data-table" id="usersTable">
       <thead>
         <tr>
           <th>User ID</th>
@@ -26,12 +72,19 @@
           <th>Role</th>
           <th>Account Status</th>
           <th>Registration Date</th>
-          <th style="text-align: right;">Administrative Actions</th>
+          <th style="text-align: right;">Available Actions</th>
         </tr>
       </thead>
       <tbody>
         {% for u in users %}
-          <tr>
+          <tr 
+            class="user-row" 
+            data-user-id="{{ u.user_id }}"
+            data-name="{{ u.full_name|lower }}"
+            data-email="{{ u.email|lower }}"
+            data-role="{{ u.role|lower }}"
+            data-status="{{ 'active' if u.is_active else 'inactive' }}"
+          >
             <td>
               <span style="font-family: 'JetBrains Mono', monospace; color: var(--text-dim); font-size: 0.8rem;">
                 #{{ u.user_id }}
@@ -100,8 +153,80 @@
             </td>
           </tr>
         {% endfor %}
+        <tr id="noUsersMatchRow" style="display: none;">
+          <td colspan="7" style="text-align: center; padding: 32px; color: var(--text-dim);">
+            No users match the selected search and filter criteria.
+          </td>
+        </tr>
       </tbody>
     </table>
   </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const searchInput = document.getElementById("userSearchInput");
+  const roleSelect = document.getElementById("roleFilterSelect");
+  const statusSelect = document.getElementById("statusFilterSelect");
+  const clearBtn = document.getElementById("clearUserFiltersBtn");
+  const rows = document.querySelectorAll(".user-row");
+  const noMatchRow = document.getElementById("noUsersMatchRow");
+  const summaryEl = document.getElementById("userCountSummary");
+  const totalCount = rows.length;
+
+  function filterUsers() {
+    const query = (searchInput ? searchInput.value : "").trim().toLowerCase();
+    const role = roleSelect ? roleSelect.value : "all";
+    const status = statusSelect ? statusSelect.value : "all";
+
+    let visibleCount = 0;
+
+    rows.forEach(function (row) {
+      const uId = row.getAttribute("data-user-id") || "";
+      const name = row.getAttribute("data-name") || "";
+      const email = row.getAttribute("data-email") || "";
+      const uRole = row.getAttribute("data-role") || "";
+      const uStatus = row.getAttribute("data-status") || "";
+
+      const matchesSearch = !query || uId.includes(query) || name.includes(query) || email.includes(query);
+      const matchesRole = role === "all" || uRole === role;
+      const matchesStatus = status === "all" || uStatus === status;
+
+      if (matchesSearch && matchesRole && matchesStatus) {
+        row.style.display = "";
+        visibleCount++;
+      } else {
+        row.style.display = "none";
+      }
+    });
+
+    if (noMatchRow) {
+      noMatchRow.style.display = visibleCount === 0 ? "" : "none";
+    }
+
+    if (summaryEl) {
+      if (visibleCount === totalCount) {
+        summaryEl.textContent = `Total Users: ${totalCount}`;
+      } else {
+        summaryEl.textContent = `Showing ${visibleCount} of ${totalCount} Users`;
+      }
+    }
+  }
+
+  if (searchInput) searchInput.addEventListener("input", filterUsers);
+  if (roleSelect) roleSelect.addEventListener("change", filterUsers);
+  if (statusSelect) statusSelect.addEventListener("change", filterUsers);
+
+  if (clearBtn) {
+    clearBtn.addEventListener("click", function () {
+      if (searchInput) searchInput.value = "";
+      if (roleSelect) roleSelect.value = "all";
+      if (statusSelect) statusSelect.value = "all";
+      filterUsers();
+    });
+  }
+});
+</script>
 {% endblock %}

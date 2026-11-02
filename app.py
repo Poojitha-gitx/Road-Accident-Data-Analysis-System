@@ -6,6 +6,7 @@ Main Flask Application Server
 import os
 import io
 import csv
+import secrets
 from datetime import datetime, timedelta
 from flask import (
     Flask, render_template, request, redirect,
@@ -111,7 +112,18 @@ def dashboard():
 @app.route("/admin/dashboard")
 @admin_required
 def admin_dashboard():
-    return redirect(url_for("dashboard"))
+    filters = extract_filters(request.args)
+    stats = analysis.get_summary_statistics(filters)
+    details = analysis.get_detailed_analysis(filters)
+
+    return render_template(
+        "dashboard.html",
+        active_page="dashboard",
+        filters=filters,
+        stats=stats,
+        details=details,
+        is_admin_view=True
+    )
 
 
 @app.route("/records")
@@ -480,7 +492,7 @@ def download_sample_csv():
 
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
-    """Handles new user registration with email OTP verification."""
+    """Handles new user registration with secure hashing and automatic user role assignment."""
     if "user_id" in session:
         return redirect(url_for("dashboard"))
 
@@ -516,19 +528,18 @@ def signup():
             flash("An account with this email address already exists. Please sign in.", "warning")
             return redirect(url_for("login"))
 
-        # Generate 6-digit OTP and send via Gmail SMTP
-        otp_code = database.generate_and_store_otp(email, purpose="signup", expires_in_minutes=5)
-        sent_ok, send_err = auth_utils.send_otp_email(email, otp_code, purpose="signup")
+        # Create user with securely hashed password and automatic 'user' role
+        pwd_hash = generate_password_hash(password)
+        database.create_user(
+            full_name=full_name,
+            email=email,
+            password_hash=pwd_hash,
+            role="user",
+            is_active=1
+        )
 
-        # Save pending user registration in session (do not create user in DB until verified)
-        session["pending_signup"] = {
-            "full_name": full_name,
-            "email": email,
-            "password_hash": generate_password_hash(password)
-        }
-
-        flash("A 6-digit verification code has been dispatched to your email address. It will expire in 5 minutes.", "info")
-        return redirect(url_for("verify_otp", purpose="signup", email=email))
+        flash("Account created successfully! Please sign in with your email and password.", "success")
+        return redirect(url_for("login"))
 
     return render_template("signup.html")
 
@@ -656,6 +667,9 @@ def login():
         if next_url and next_url.startswith("/") and not next_url.startswith("//"):
             return redirect(next_url)
 
+        # Redirect administrators to the Admin Dashboard; normal users to the User Dashboard
+        if user.get("role") == "admin":
+            return redirect(url_for("admin_dashboard"))
         return redirect(url_for("dashboard"))
 
     return render_template("login.html")
@@ -671,7 +685,7 @@ def logout():
 
 @app.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
-    """Initiates password recovery with email OTP."""
+    """Initiates password recovery with secure recovery link and verification code."""
     if "user_id" in session:
         return redirect(url_for("dashboard"))
 
@@ -689,24 +703,37 @@ def forgot_password():
             return render_template("forgot_password.html", email=email)
 
         user = database.get_user_by_email(email)
-        # Security: Do not reveal whether email exists
+        token = secrets.token_urlsafe(32)
+
         if user and user.get("is_active"):
-            otp_code = database.generate_and_store_otp(email, purpose="forgot_password", expires_in_minutes=5)
-            auth_utils.send_otp_email(email, otp_code, purpose="forgot_password")
+            otp_code = database.generate_and_store_otp(email, purpose="forgot_password", expires_in_minutes=15)
+            auth_utils.store_reset_token(email, token, expires_in_minutes=15)
+            reset_url = url_for("reset_password", token=token, email=email, _external=True)
+            auth_utils.send_password_reset_email(email, reset_url=reset_url, otp_code=otp_code)
 
         session["reset_email"] = email
-        flash("If an account with that email exists, a 6-digit verification code has been dispatched.", "info")
-        return redirect(url_for("verify_otp", purpose="forgot_password", email=email))
+        session["reset_token"] = token
+        flash("If an account with that email exists, password recovery instructions have been dispatched.", "info")
+        return redirect(url_for("reset_password", token=token, email=email))
 
     return render_template("forgot_password.html")
 
 
 @app.route("/reset-password", methods=["GET", "POST"])
 def reset_password():
-    """Finalizes password update after OTP verification."""
-    email = session.get("can_reset_password")
-    if not email:
-        flash("Password reset authorization has expired. Please request a new verification code.", "warning")
+    """Finalizes password update after token, OTP, or session authorization."""
+    token = request.args.get("token") or request.form.get("token") or session.get("reset_token")
+    email = request.args.get("email") or request.form.get("email") or session.get("reset_email") or session.get("can_reset_password")
+
+    is_authorized = False
+    if email:
+        if session.get("can_reset_password") == email:
+            is_authorized = True
+        elif token and auth_utils.verify_reset_token(email, token):
+            is_authorized = True
+
+    if not is_authorized:
+        flash("Password reset authorization has expired or is invalid. Please request a new recovery link.", "warning")
         return redirect(url_for("forgot_password"))
 
     if request.method == "POST":
@@ -722,7 +749,7 @@ def reset_password():
         if errors:
             for err in errors:
                 flash(err, "danger")
-            return render_template("reset_password.html")
+            return render_template("reset_password.html", token=token, email=email)
 
         user = database.get_user_by_email(email)
         if not user:
@@ -732,11 +759,15 @@ def reset_password():
         new_hash = generate_password_hash(password)
         database.update_user_password(user["user_id"], new_hash)
 
+        auth_utils.consume_reset_token(email)
         session.pop("can_reset_password", None)
         session.pop("reset_email", None)
+        session.pop("reset_token", None)
 
         flash("Your password has been successfully updated! Please sign in with your new password.", "success")
         return redirect(url_for("login"))
+
+    return render_template("reset_password.html", token=token, email=email)
 
     return render_template("reset_password.html")
 

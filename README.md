@@ -8,7 +8,8 @@ An end-to-end, full-stack analytical web platform built to record, monitor, anal
 ## 🌟 Key Highlights
 
 - **Backend Architecture:** Python Flask RESTful backend with modular data, authentication, and query layers.
-- **Authentication & RBAC:** Secure session authentication with Werkzeug password hashing, **6-digit email OTP verification via Gmail SMTP**, 5-minute code expiration, resend cooldowns, attempt throttling, CSRF protection, and two-tier role-based access control (**Admin** vs **User**).
+- **Authentication & RBAC:** Secure session authentication with Werkzeug password hashing, professional banking-style authentication interfaces, token & OTP password recovery, 5-minute code expiration, attempt throttling, CSRF protection, and two-tier role-based access control (**Admin** vs **User**).
+- **Design System Alignment:** New authentication pages (Login, Signup, Forgot Password, Reset Password) inspired by the clean, professional visual architecture of the *Banking Transaction Analysis System* reference design (neutral ivory canvas, deep navy primary accents, accessible field controls, password visibility toggles, live strength indicators, and responsive cards).
 - **Database Engine:** MySQL relational database (with seamless SQLite fallback) utilizing **parameterized SQL queries (`%s`)** to completely prevent SQL Injection vulnerabilities, backed by environment variable credentials (`.env`) and automatic schema initialization.
 - **Advanced Data Processing:** **Pandas** for multi-dimensional data grouping, cross-tabulations, and time-series feature engineering; **NumPy** for descriptive statistical modeling (mean, median, standard deviation, interquartile range).
 - **Analytical Chart Generation:** Dynamic **Matplotlib** visualizations rendered on-the-fly and streamed directly as high-resolution PNG charts.

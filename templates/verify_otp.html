@@ -1,70 +1,69 @@
 {% extends "auth_base.html" %}
 
-{% block title %}Verify Security Code | AccidentRadar{% endblock %}
-{% block auth_title %}Verify Email Address{% endblock %}
-{% block auth_subtitle %}
-Enter the 6-digit verification code sent to <strong style="color: var(--primary);">{{ email }}</strong>
+{% block title %}Verify Security Code — Road Accident Data Analysis System{% endblock %}
+{% block body_page %}verify-otp{% endblock %}
+{% block eyebrow %}IDENTITY VERIFICATION{% endblock %}
+{% block heading %}Enter Verification Code{% endblock %}
+{% block intro_copy %}
+Enter the 6-digit numeric verification code dispatched to <strong style="color: var(--ink);">{{ email }}</strong>
 {% endblock %}
 
-{% block auth_content %}
-<form method="POST" action="{{ url_for('verify_otp', purpose=purpose) }}" class="auth-form" id="verifyOtpForm">
+{% block content %}
+<form method="POST" action="{{ url_for('verify_otp', purpose=purpose) }}" class="auth-form" id="verifyOtpForm" novalidate>
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   <input type="hidden" name="email" value="{{ email }}">
   <input type="hidden" name="purpose" value="{{ purpose }}">
 
-  <div class="form-group" style="text-align: center;">
-    <label for="otp_code" style="display: block; margin-bottom: 8px;">6-Digit Verification Code</label>
+  <div class="filter-field" style="text-align: center;">
+    <label for="otp_code" style="text-align: center;">6-Digit Security Code</label>
     <input 
       type="text" 
       name="otp_code" 
       id="otp_code" 
-      class="form-control otp-input-field" 
       maxlength="6" 
       pattern="[0-9]{6}" 
       inputmode="numeric" 
       autocomplete="one-time-code" 
       placeholder="------" 
+      style="font-family: monospace; font-size: 1.6rem; letter-spacing: 0.35em; text-align: center; height: 50px; font-weight: 700; color: var(--navy);"
       required 
       autofocus
     >
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 0.8rem; color: var(--text-dim);">
-      <span>Code expires in: <strong id="expiryCountdown" style="color: var(--severity-serious);">05:00</strong></span>
-      <span>Attempts limit: 5</span>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 0.76rem; color: var(--ink-muted);">
+      <span>Code expires in: <strong id="expiryCountdown" style="color: var(--amber);">05:00</strong></span>
+      <span>Max attempts: 5</span>
     </div>
   </div>
 
-  <button type="submit" class="btn btn-primary" id="verifySubmitBtn" style="width: 100%; justify-content: center; padding: 12px; font-size: 0.95rem;">
-    Verify Code & Continue
+  <button class="button button-primary" type="submit" id="verifySubmitBtn" style="margin-top: .4rem;">
+    <span class="button-spinner" aria-hidden="true"></span>
+    <span class="button-text">Verify Code & Continue</span>
   </button>
 </form>
 
-<div style="margin-top: 20px; text-align: center;">
+<div style="margin-top: 1.25rem; text-align: center;">
   <form method="POST" action="{{ url_for('resend_otp') }}" id="resendOtpForm" style="display: inline;">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <input type="hidden" name="email" value="{{ email }}">
     <input type="hidden" name="purpose" value="{{ purpose }}">
-    <button type="submit" class="btn btn-secondary btn-sm" id="resendOtpBtn" style="display: inline-flex; align-items: center; gap: 6px;">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.19"/>
-      </svg>
+    <button type="submit" class="button button-quiet" id="resendOtpBtn" style="min-height: 34px; padding: .35rem .75rem; font-size: .78rem;">
       <span id="resendBtnText">Resend Verification Code</span>
     </button>
   </form>
 </div>
 {% endblock %}
 
-{% block auth_footer %}
+{% block auth_note %}
 {% if purpose == 'signup' %}
 Entered the wrong email? <a href="{{ url_for('signup') }}">Change Email</a>
 {% else %}
-Remember your credentials? <a href="{{ url_for('login') }}">Back to Login</a>
+Remember your credentials? <a href="{{ url_for('login') }}">Back to Sign In</a>
 {% endif %}
 {% endblock %}
 
 {% block scripts %}
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-    // 5-Minute Overall Expiration Timer
     let totalSeconds = 300;
     const expiryEl = document.getElementById("expiryCountdown");
     const interval = setInterval(() => {
@@ -73,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
             clearInterval(interval);
             if (expiryEl) {
                 expiryEl.textContent = "Expired";
-                expiryEl.style.color = "var(--severity-fatal)";
+                expiryEl.style.color = "var(--red)";
             }
         } else {
             const m = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
@@ -82,7 +81,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }, 1000);
 
-    // 60-Second Resend Cooldown
     const resendBtn = document.getElementById("resendOtpBtn");
     const resendText = document.getElementById("resendBtnText");
     let cooldown = {{ remaining_cooldown or 60 }};
@@ -90,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function startCooldown(seconds) {
         if (!resendBtn) return;
         resendBtn.disabled = true;
-        resendBtn.style.opacity = "0.6";
+        resendBtn.style.opacity = "0.55";
         resendBtn.style.cursor = "not-allowed";
 
         const cdTimer = setInterval(() => {
