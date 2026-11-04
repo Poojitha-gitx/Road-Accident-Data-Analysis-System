@@ -121,14 +121,17 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
+      // Prevent duplicate in-flight form submissions
+      if (form.dataset.submitting === "true") {
+        e.preventDefault();
+        return;
+      }
+      form.dataset.submitting = "true";
+
       const submitBtn = form.querySelector("button[type='submit']");
       if (submitBtn) {
         submitBtn.classList.add("is-loading");
-        submitBtn.disabled = true;
-        // submit the form programmatically to ensure it posts even with disabled button
-        setTimeout(function () {
-          form.submit();
-        }, 10);
+        submitBtn.setAttribute("aria-busy", "true");
       }
     });
   });

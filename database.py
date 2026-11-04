@@ -13,17 +13,27 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Database Config from Environment Variables
-use_tidb = (os.getenv("USE_TIDB", "").lower() in ("true", "1", "yes")) or (bool(os.getenv("RENDER")) and bool(os.getenv("TIDB_HOST")))
+is_render = bool(os.getenv("RENDER"))
+tidb_host = os.getenv("TIDB_HOST", "").strip()
+db_host_env = os.getenv("DB_HOST", "").strip()
+has_remote_db = bool(tidb_host or (db_host_env and db_host_env.lower() not in ("localhost", "127.0.0.1", "")))
 
-DB_TYPE = os.getenv("DB_TYPE", "mysql").lower()
-if use_tidb and os.getenv("TIDB_HOST"):
-    DB_HOST = os.getenv("TIDB_HOST")
+use_tidb = (os.getenv("USE_TIDB", "").lower() in ("true", "1", "yes")) or (is_render and bool(tidb_host))
+
+# If running on Render without remote cloud DB credentials, immediately use SQLite mode to prevent hanging on localhost:3306
+if is_render and not has_remote_db:
+    DB_TYPE = "sqlite"
+else:
+    DB_TYPE = os.getenv("DB_TYPE", "mysql").lower()
+
+if use_tidb and tidb_host:
+    DB_HOST = tidb_host
     DB_PORT = int(os.getenv("TIDB_PORT", 4000))
     DB_USER = os.getenv("TIDB_USER", "root")
     DB_PASSWORD = os.getenv("TIDB_PASSWORD", "")
     DB_NAME = os.getenv("TIDB_DATABASE") or os.getenv("DB_NAME", "accident_analysis_db")
 else:
-    DB_HOST = os.getenv("DB_HOST") or os.getenv("TIDB_HOST", "localhost")
+    DB_HOST = db_host_env or tidb_host or "localhost"
     DB_PORT = int(os.getenv("DB_PORT") or os.getenv("TIDB_PORT", 3306))
     DB_USER = os.getenv("DB_USER") or os.getenv("TIDB_USER", "root")
     DB_PASSWORD = os.getenv("DB_PASSWORD") if os.getenv("DB_PASSWORD") is not None else os.getenv("TIDB_PASSWORD", "")
@@ -78,7 +88,7 @@ def check_and_set_driver():
     """
     Tests MySQL connection once. If successful, sets CURRENT_ACTIVE_DRIVER to 'mysql'.
     Supports TiDB Cloud TLS connections and local MySQL instances.
-    Otherwise falls back to 'sqlite'.
+    Otherwise falls back to 'sqlite' with fast failover.
     """
     global CURRENT_ACTIVE_DRIVER, CONNECTION_MESSAGE, _MYSQL_TESTED
 
@@ -90,7 +100,7 @@ def check_and_set_driver():
             import mysql.connector
             ssl_kwargs = get_mysql_ssl_config()
 
-            # Attempt direct database connection first (works for TiDB Cloud and existing MySQL)
+            # Attempt direct database connection with short 2s timeout
             try:
                 test_conn = mysql.connector.connect(
                     host=DB_HOST,
@@ -98,31 +108,34 @@ def check_and_set_driver():
                     user=DB_USER,
                     password=DB_PASSWORD,
                     database=DB_NAME,
-                    connection_timeout=4,
+                    connection_timeout=2,
                     **ssl_kwargs
                 )
                 test_conn.close()
-            except Exception:
-                # If database does not exist yet (local MySQL setup), connect to server and create it
-                test_conn = mysql.connector.connect(
-                    host=DB_HOST,
-                    port=DB_PORT,
-                    user=DB_USER,
-                    password=DB_PASSWORD,
-                    connection_timeout=4,
-                    **ssl_kwargs
-                )
-                cursor = test_conn.cursor()
-                cursor.execute(f"CREATE DATABASE IF NOT EXISTS `{DB_NAME}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;")
-                cursor.close()
-                test_conn.close()
+            except mysql.connector.Error as err:
+                # If error is 1049 (Unknown database) and running on local machine, create it
+                if getattr(err, "errno", None) == 1049 and DB_HOST in ("localhost", "127.0.0.1"):
+                    test_conn = mysql.connector.connect(
+                        host=DB_HOST,
+                        port=DB_PORT,
+                        user=DB_USER,
+                        password=DB_PASSWORD,
+                        connection_timeout=2,
+                        **ssl_kwargs
+                    )
+                    cursor = test_conn.cursor()
+                    cursor.execute(f"CREATE DATABASE IF NOT EXISTS `{DB_NAME}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;")
+                    cursor.close()
+                    test_conn.close()
+                else:
+                    raise err
 
             CURRENT_ACTIVE_DRIVER = "mysql"
             ssl_note = " (TLS Verified)" if ssl_kwargs else ""
             CONNECTION_MESSAGE = f"Connected to MySQL on {DB_HOST}:{DB_PORT}{ssl_note} (Database: {DB_NAME})"
         except Exception as e:
             CURRENT_ACTIVE_DRIVER = "sqlite"
-            CONNECTION_MESSAGE = f"MySQL connection notice: {e}. Operating in SQLite fallback mode."
+            CONNECTION_MESSAGE = f"MySQL notice: {e}. Operating in SQLite mode."
     else:
         CURRENT_ACTIVE_DRIVER = "sqlite"
         CONNECTION_MESSAGE = f"Operating in SQLite mode ({SQLITE_PATH})"
@@ -148,8 +161,8 @@ def get_db_connection():
                 user=DB_USER,
                 password=DB_PASSWORD,
                 database=DB_NAME,
-                autocommit=False,
-                connection_timeout=5,
+                autocommit=True,
+                connection_timeout=3,
                 **ssl_kwargs
             )
             return conn, "mysql"
@@ -161,7 +174,7 @@ def get_db_connection():
 
 
 def get_sqlite_connection():
-    conn = sqlite3.connect(SQLITE_PATH)
+    conn = sqlite3.connect(SQLITE_PATH, timeout=10.0, check_same_thread=False)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -379,6 +392,30 @@ def init_db():
 
     create_initial_admin()
 
+    # Seed baseline records from sample_accidents.csv if database is newly initialized and empty
+    try:
+        cnt_row = execute_query("SELECT COUNT(*) as cnt FROM accidents", fetch="one")
+        if not cnt_row or cnt_row.get("cnt", 0) == 0:
+            csv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_accidents.csv")
+            if os.path.exists(csv_path):
+                import csv as _csv
+                with open(csv_path, mode="r", encoding="utf-8") as f:
+                    reader = _csv.DictReader(f)
+                    for row in reader:
+                        try:
+                            add_accident(
+                                accident_datetime_str=row["accident_datetime"].strip(),
+                                region=row["region"].strip(),
+                                road_name=row.get("road_name", "").strip(),
+                                vehicle_type=row["vehicle_type"].strip(),
+                                severity=row["severity"].strip(),
+                                weather=row.get("weather", "Clear").strip()
+                            )
+                        except Exception:
+                            pass
+    except Exception as e:
+        print(f"Notice: Baseline data seeding skipped ({e})")
+
 
 def create_initial_admin():
     """
@@ -489,6 +526,7 @@ def add_accident(accident_datetime_str, region, road_name, vehicle_type, severit
         (accident_datetime_str, loc_id, vehicle_type, severity, weather),
         fetch="insert_id"
     )
+    clear_metadata_cache()
     return accident_id
 
 
@@ -503,6 +541,7 @@ def update_accident(accident_id, accident_datetime_str, region, road_name, vehic
         (accident_datetime_str, loc_id, vehicle_type, severity, weather, accident_id),
         fetch="count"
     )
+    clear_metadata_cache()
     return count > 0
 
 
@@ -512,6 +551,7 @@ def delete_accident(accident_id):
         (accident_id,),
         fetch="count"
     )
+    clear_metadata_cache()
     return count > 0
 
 
@@ -699,18 +739,43 @@ def get_accidents(filters=None, page=1, per_page=15, sort_by="accident_datetime"
     }
 
 
+_CACHED_REGIONS = None
+_CACHED_YEARS = None
+
+
+def clear_metadata_cache():
+    """Invalidates in-memory metadata caches after mutations."""
+    global _CACHED_REGIONS, _CACHED_YEARS
+    _CACHED_REGIONS = None
+    _CACHED_YEARS = None
+
+
 def get_all_regions():
-    rows = execute_query("SELECT DISTINCT region FROM locations ORDER BY region ASC", fetch="all")
-    return [r["region"] for r in rows if r["region"]]
+    global _CACHED_REGIONS
+    if _CACHED_REGIONS is not None:
+        return _CACHED_REGIONS
+    try:
+        rows = execute_query("SELECT DISTINCT region FROM locations ORDER BY region ASC", fetch="all")
+        _CACHED_REGIONS = [r["region"] for r in rows if r["region"]]
+    except Exception:
+        _CACHED_REGIONS = ["Tirupati", "Chittoor", "Madanapalle", "Pileru", "Srikalahasti", "Puttur", "Palamaner"]
+    return _CACHED_REGIONS
 
 
 def get_all_years():
-    driver = CURRENT_ACTIVE_DRIVER or check_and_set_driver()
-    if driver == "mysql":
-        rows = execute_query("SELECT DISTINCT YEAR(accident_datetime) as year FROM accidents WHERE accident_datetime IS NOT NULL ORDER BY year DESC", fetch="all")
-    else:
-        rows = execute_query("SELECT DISTINCT SUBSTR(accident_datetime, 1, 4) as year FROM accidents WHERE accident_datetime IS NOT NULL ORDER BY year DESC", fetch="all")
-    return [str(r["year"]) for r in rows if r.get("year")]
+    global _CACHED_YEARS
+    if _CACHED_YEARS is not None:
+        return _CACHED_YEARS
+    try:
+        driver = CURRENT_ACTIVE_DRIVER or check_and_set_driver()
+        if driver == "mysql":
+            rows = execute_query("SELECT DISTINCT YEAR(accident_datetime) as year FROM accidents WHERE accident_datetime IS NOT NULL ORDER BY year DESC", fetch="all")
+        else:
+            rows = execute_query("SELECT DISTINCT SUBSTR(accident_datetime, 1, 4) as year FROM accidents WHERE accident_datetime IS NOT NULL ORDER BY year DESC", fetch="all")
+        _CACHED_YEARS = [str(r["year"]) for r in rows if r.get("year")]
+    except Exception:
+        _CACHED_YEARS = ["2026", "2025", "2024", "2023", "2022", "2021", "2020"]
+    return _CACHED_YEARS
 
 
 def get_raw_records_for_df(filters=None):
