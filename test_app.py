@@ -32,13 +32,20 @@ def run_tests():
     print("\n[Step 1] Checking Jinja2 Template Syntax...")
     env = Environment(loader=FileSystemLoader("templates"))
     template_list = [
-        "base.html", "dashboard.html", "records.html", "analysis.html", "reports.html",
+        "landing.html", "base.html", "dashboard.html", "records.html", "analysis.html", "reports.html",
         "auth_base.html", "login.html", "signup.html",
         "forgot_password.html", "reset_password.html", "profile.html", "admin_users.html"
     ]
     for t_name in template_list:
         env.get_template(t_name)
         print(f"  -> templates/{t_name}: Valid Syntax")
+
+    # 1b. Check Public Landing Page
+    print("\n[Step 1b] Checking Public Landing Page ('/')...")
+    res_land = client.get("/")
+    assert res_land.status_code == 200
+    assert b"Road Traffic Accident Analysis" in res_land.data
+    print("  -> Landing page renders successfully with HTTP 200: PASS")
 
     # 2. Database Connection Check
     print("\n[Step 2] Checking Database Connection & Active Driver...")

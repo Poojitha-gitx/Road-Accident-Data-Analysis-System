@@ -538,11 +538,25 @@ def signup():
     return render_template("signup.html")
 
 
+@app.route("/")
+def landing():
+    """
+    Public landing page for Road Accident Data Analysis System.
+    Provides platform overview, live incident statistics, analytical feature
+    breakdowns, role permissions, and navigation CTAs.
+    """
+    try:
+        row = database.execute_query("SELECT COUNT(*) as cnt FROM accidents", fetch="one")
+        total_accidents = row["cnt"] if row and row.get("cnt") else 150
+    except Exception:
+        total_accidents = 150
+    return render_template("landing.html", total_accidents=total_accidents)
+
+
 @app.route("/login", methods=["GET", "POST"])
-@app.route("/", methods=["GET", "POST"])
 def login():
     """
-    Root & Login portal for https://road-accident-data-analysis-system.onrender.com/
+    Sign-in portal for Road Accident Data Analysis System.
     Renders professional banking-style authentication portal or redirects active sessions.
     """
     if "user_id" in session:

@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Road Accident Data Analysis System - Analytical, Geospatial, and Temporal Safety Intelligence Platform.">
+  <title>Road Accident Data Analysis System — Safety Analytics & Corridor Surveillance</title>
+
+  <!-- Modern Fonts & Authentication Stylesheet (Banking-Inspired Design) -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+</head>
+<body data-page="landing">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <!-- Banking-Style Top Navigation Header -->
+  <header class="site-header">
+    <a class="brand" href="{{ url_for('landing') }}" aria-label="Road Accident Data Analysis System home">
+      <span class="brand-mark" aria-hidden="true">RA</span>
+      <span class="brand-name">Road Accident<br>Data Analysis System</span>
+    </a>
+
+    <!-- Center Navigation Links -->
+    <nav class="landing-nav" aria-label="Main Navigation">
+      <a href="#overview" class="nav-link">Overview</a>
+      <a href="#features" class="nav-link">Analytical Modules</a>
+      <a href="#roles" class="nav-link">Role Access</a>
+      <a href="#governance" class="nav-link">Governance &amp; Ethics</a>
+    </nav>
+
+    <!-- User & Access Actions -->
+    <div class="landing-actions">
+      {% if current_user %}
+        <span class="environment-label">
+          <span class="environment-dot" aria-hidden="true"></span>
+          {{ current_user.full_name }} ({{ current_user.role|capitalize }})
+        </span>
+        <a href="{{ url_for('dashboard') }}" class="button button-primary">
+          Open Dashboard &rarr;
+        </a>
+      {% else %}
+        <a href="{{ url_for('login') }}" class="button button-quiet">
+          Sign In
+        </a>
+        <a href="{{ url_for('signup') }}" class="button button-primary">
+          Create Account
+        </a>
+      {% endif %}
+    </div>
+  </header>
+
+  <main id="main-content" class="page-shell">
+    
+    <!-- Hero Section -->
+    <section class="landing-hero" id="overview" aria-labelledby="hero-heading">
+      <div class="badge-pill">
+        <span class="badge-dot" aria-hidden="true"></span>
+        Academic &amp; Geospatial Safety Intelligence
+      </div>
+      <h1 id="hero-heading">Evidence-Based Road Traffic Accident Analysis &amp; Urban Corridor Surveillance</h1>
+      <p class="hero-desc">
+        A comprehensive analytical platform engineered to record, monitor, analyze, and visualize vehicular collision patterns across metropolitan transit networks. Empowering safety researchers and transport planners with verifiable statistical rigor and longitudinal corridor intelligence.
+      </p>
+
+      <div class="hero-cta-group">
+        {% if current_user %}
+          <a href="{{ url_for('dashboard') }}" class="button button-primary button-lg">
+            Access Dashboard Workspace &rarr;
+          </a>
+        {% else %}
+          <a href="{{ url_for('login') }}" class="button button-primary button-lg">
+            Access Analytical Workspace &rarr;
+          </a>
+          <a href="{{ url_for('signup') }}" class="button button-quiet button-lg">
+            Create User Account
+          </a>
+        {% endif %}
+        <a href="#features" class="hero-learn-more">
+          Explore System Capabilities &darr;
+        </a>
+      </div>
+    </section>
+
+    <!-- Live System Metrics Grid (Banking-Inspired) -->
+    <section class="landing-metrics" aria-label="System Metrics Summary">
+      <div class="metrics-grid">
+        <div class="metric">
+          <h3>Accident Records Persisted</h3>
+          <p class="metric-value">{{ total_accidents }}+ Incidents</p>
+          <p class="metric-detail">Verified spatial &amp; temporal entries</p>
+        </div>
+        <div class="metric">
+          <h3>Sector Corridors Monitored</h3>
+          <p class="metric-value">7 AP Corridors</p>
+          <p class="metric-detail">Tirupati, Chittoor, Madanapalle &amp; more</p>
+        </div>
+        <div class="metric">
+          <h3>Vehicle Classifications</h3>
+          <p class="metric-value">6 Categories</p>
+          <p class="metric-detail">Bikes, Cars, Buses, Trucks, Autos, Others</p>
+        </div>
+        <div class="metric">
+          <h3>Security &amp; RBAC Architecture</h3>
+          <p class="metric-value">100% Parameterized</p>
+          <p class="metric-detail">SQL injection immunity &amp; 2-tier RBAC</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Core Analytical Features Grid -->
+    <section class="section-block" id="features" aria-labelledby="features-heading">
+      <div class="section-header-center">
+        <p class="eyebrow">INTELLIGENCE MODULES</p>
+        <h2 id="features-heading">Specialized Analytical Capabilities</h2>
+        <p>Engineered with Python, Flask, Pandas, and NumPy to transform raw incident logs into actionable empirical insights.</p>
+      </div>
+
+      <div class="features-grid">
+        <!-- Feature 1 -->
+        <article class="feature-card">
+          <div class="feature-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+              <line x1="8" y1="2" x2="8" y2="18"></line>
+              <line x1="16" y1="6" x2="16" y2="22"></line>
+            </svg>
+          </div>
+          <h3>Geospatial Corridor Surveillance</h3>
+          <p>Identifies high-density arterial accident hotspots across transit corridors. Automatically ranks regional sectors by incident frequency and fatality ratio.</p>
+          <span class="feature-tag">Spatial Analytics</span>
+        </article>
+
+        <!-- Feature 2 -->
+        <article class="feature-card">
+          <div class="feature-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+          </div>
+          <h3>Temporal &amp; Diurnal Curves</h3>
+          <p>24-hour diurnal modeling capturing morning rush, afternoon, evening commute, and nocturnal hazard windows with longitudinal year-over-year trends.</p>
+          <span class="feature-tag">Time Series</span>
+        </article>
+
+        <!-- Feature 3 -->
+        <article class="feature-card">
+          <div class="feature-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="1" y="3" width="15" height="13"></rect>
+              <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+              <circle cx="5.5" cy="18.5" r="2.5"></circle>
+              <circle cx="18.5" cy="18.5" r="2.5"></circle>
+            </svg>
+          </div>
+          <h3>Vehicle Vulnerability Profiling</h3>
+          <p>Cross-tabulates collision severity against distinct vehicle types—pinpointing high-risk two-wheeler vulnerabilities versus commercial freight impacts.</p>
+          <span class="feature-tag">Cross-Tabulation</span>
+        </article>
+
+        <!-- Feature 4 -->
+        <article class="feature-card">
+          <div class="feature-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="20" x2="18" y2="10"></line>
+              <line x1="12" y1="20" x2="12" y2="4"></line>
+              <line x1="6" y1="20" x2="6" y2="14"></line>
+            </svg>
+          </div>
+          <h3>Mathematical &amp; Parametric Statistics</h3>
+          <p>Computes arithmetic mean (&mu;), median (Q<sub>2</sub>), sample standard deviation (&sigma;), and interquartile range (IQR) powered by NumPy and Pandas.</p>
+          <span class="feature-tag">Statistical Modeling</span>
+        </article>
+
+        <!-- Feature 5 -->
+        <article class="feature-card">
+          <div class="feature-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="12" y1="18" x2="12" y2="12"></line>
+              <line x1="9" y1="15" x2="15" y2="15"></line>
+            </svg>
+          </div>
+          <h3>Batch CSV Ingestion &amp; Quality Audit</h3>
+          <p>Administrative batch ingestion pipeline with strict schema verification, timestamp parsing, vehicle domain validation, and rejected row reporting.</p>
+          <span class="feature-tag">Data Ingestion</span>
+        </article>
+
+        <!-- Feature 6 -->
+        <article class="feature-card">
+          <div class="feature-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+          </div>
+          <h3>Publication-Quality Reports &amp; Visuals</h3>
+          <p>Dynamic Matplotlib chart generation streamed directly at 130 DPI with anti-aliasing, exportable enriched CSV datasets, and formatted academic text dossiers.</p>
+          <span class="feature-tag">Data Export</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- Role-Based Access Architecture Section -->
+    <section class="section-block" id="roles" aria-labelledby="roles-heading">
+      <div class="section-header-center">
+        <p class="eyebrow">GOVERNANCE &amp; SECURITY</p>
+        <h2 id="roles-heading">Role-Based Access Control Architecture</h2>
+        <p>Built with granular server-side authorization decorators ensuring read-only safety for general users while equipping administrators with full data controls.</p>
+      </div>
+
+      <div class="roles-grid">
+        <!-- Normal User Card -->
+        <article class="role-card role-card-user">
+          <span class="role-badge role-badge-user">Normal User Role</span>
+          <h3>Researcher &amp; Analyst Access</h3>
+          <p class="role-desc">Designed for transport researchers, traffic safety auditors, and institutional investigators requiring uninhibited analytical visibility.</p>
+          
+          <ul class="role-checklist">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#28675e" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Full read-only surveillance of analytical dashboard and accident statistics</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#28675e" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Interactive multi-dimensional filtering by Year, Location, Vehicle, Severity, and Weather</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#28675e" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Inspection of detailed cross-tabulation matrices and diurnal breakdown tables</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#28675e" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Export capability for high-resolution PNG charts, enriched CSVs, and text summaries</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#28675e" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Personal profile updates, credential self-service, and in-app password changes</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#a04b45" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              <span style="color: var(--ink-muted);">Restricted: Cannot mutate records, ingest CSVs, or access user administration (403 Forbidden)</span>
+            </li>
+          </ul>
+
+          <a href="{{ url_for('signup') }}" class="button button-quiet" style="width: 100%; text-align: center;">
+            Register as Analyst &rarr;
+          </a>
+        </article>
+
+        <!-- Administrator Card -->
+        <article class="role-card role-card-admin">
+          <span class="role-badge role-badge-admin">Administrator Role</span>
+          <h3>System Administrator Control</h3>
+          <p class="role-desc">Configured for system maintainers, safety database directors, and authorized administrators with complete operational authority.</p>
+
+          <ul class="role-checklist">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#244459" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Complete operational authority over accident records (Create, Read, Update, Delete)</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#244459" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Batch CSV ingestion pipeline with automated data cleansing and schema validation</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#244459" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>User Management console with real-time text search and multi-criteria status filtering</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#244459" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Account lifecycle management: activate/deactivate accounts and assign authorization roles</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#244459" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Self-protection logic preventing administrative self-deactivation and self-demotion</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#244459" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Environment-variable bootstrapped initial admin account with Werkzeug password hashing</span>
+            </li>
+          </ul>
+
+          <a href="{{ url_for('login') }}" class="button button-primary" style="width: 100%; text-align: center;">
+            Administrator Sign-In &rarr;
+          </a>
+        </article>
+      </div>
+    </section>
+
+    <!-- Governance, Ethics & Academic Notice Section -->
+    <section class="section-block" id="governance" aria-labelledby="governance-heading">
+      <div class="governance-banner">
+        <div class="governance-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+        </div>
+        <div class="governance-content">
+          <h3 id="governance-heading">Academic Governance, Privacy &amp; Methodological Disclosures</h3>
+          <p>
+            This system was engineered as a university academic project in Computer Science &amp; Engineering. It is dedicated to methodological transparency, ethical computational practices, and data integrity:
+          </p>
+          <p>
+            <strong>Synthetic Demonstration Dataset:</strong> Recorded incidents represent synthesized demonstration samples spanning urban regional sectors in Andhra Pradesh (Tirupati, Chittoor, Madanapalle, Pileru, Srikalahasti, Puttur, Palamaner). All road names depict simulated sector corridors created for reproducible academic demonstration.
+          </p>
+          <p>
+            <strong>Privacy &amp; Non-Causality:</strong> The system maintains strict zero personally identifying information (PII)—no personal identities, vehicle license plates, or driver information are stored. All analytical observations demonstrate statistical and empirical associations, not direct causal factors.
+          </p>
+
+          <div class="governance-pills">
+            <span class="gov-pill">Zero PII</span>
+            <span class="gov-pill">Synthetic Demo Data</span>
+            <span class="gov-pill">Observational Associations</span>
+            <span class="gov-pill">Parameterized SQL Security</span>
+            <span class="gov-pill">Werkzeug Password Hashing</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Call to Action Banner -->
+    <section class="cta-card">
+      <h2>Ready to Explore Traffic Safety Intelligence?</h2>
+      <p>Log in with your credentials or register a new analytical account to access interactive crash distribution charts, corridor heatmaps, and downloadable research dossiers.</p>
+      
+      <div class="hero-cta-group">
+        {% if current_user %}
+          <a href="{{ url_for('dashboard') }}" class="button button-primary button-lg">
+            Launch Dashboard Workspace &rarr;
+          </a>
+        {% else %}
+          <a href="{{ url_for('login') }}" class="button button-primary button-lg">
+            Sign In to Workspace &rarr;
+          </a>
+          <a href="{{ url_for('signup') }}" class="button button-quiet button-lg">
+            Create Free Account
+          </a>
+        {% endif %}
+      </div>
+    </section>
+
+    <!-- Professional Banking-Style Page Footer -->
+    <footer class="page-footer">
+      <p>Road Accident Data Analysis System &bull; Dedicated Analytical &amp; Spatial Safety Workspace &bull; Andhra Pradesh Regional Corridor Research</p>
+    </footer>
+  </main>
+
+  <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+</body>
+</html>

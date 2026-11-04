@@ -300,23 +300,30 @@ def run_auth_tests():
     client.get("/logout")
 
     # -------------------------------------------------------------
-    # 9. Verify Root Portal Endpoint (https://road-accident-data-analysis-system.onrender.com/)
+    # 9. Verify Root Landing Page & Dedicated Login Endpoint
     # -------------------------------------------------------------
-    print("\n[Phase 9] Testing Root Portal Endpoint ('/')...")
-    # Unauthenticated visitor to '/' directly receives the professional banking-style Login portal
+    print("\n[Phase 9] Testing Root Landing Page ('/') & Dedicated Login ('/login')...")
+    # Unauthenticated visitor to '/' receives the professional banking-style Landing Page
     res_root = client.get("/")
     assert res_root.status_code == 200
-    assert b"Sign In" in res_root.data or b"Road Accident" in res_root.data
-    print("  -> Root '/' directly renders professional Login portal with HTTP 200 PASS")
+    assert b"Road Traffic Accident Analysis" in res_root.data
+    assert b"Analytical Modules" in res_root.data
+    print("  -> Root '/' directly renders professional Landing Page with HTTP 200 PASS")
 
-    # Authenticate directly via root POST
-    res_root_login = client.post("/", data={
+    # Dedicated /login endpoint renders login form
+    res_login_page = client.get("/login")
+    assert res_login_page.status_code == 200
+    assert b"Sign In" in res_login_page.data
+    print("  -> Dedicated '/login' renders Login form with HTTP 200 PASS")
+
+    # Authenticate via /login POST
+    res_login_post = client.post("/login", data={
         "email": test_email,
         "password": newer_pass
     }, follow_redirects=False)
-    assert res_root_login.status_code == 302
-    assert res_root_login.location.endswith("/dashboard")
-    print("  -> Root POST authentication redirects to /dashboard PASS")
+    assert res_login_post.status_code == 302
+    assert res_login_post.location.endswith("/dashboard")
+    print("  -> Login POST authentication redirects to /dashboard PASS")
     client.get("/logout")
 
     # -------------------------------------------------------------

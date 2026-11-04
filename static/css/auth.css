@@ -546,3 +546,464 @@ a {
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================================================
+ * Landing Page Styles (Banking Design Reference Aesthetic)
+ * ============================================================ */
+
+.landing-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.8rem;
+}
+
+.landing-nav .nav-link {
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-size: .86rem;
+  font-weight: 600;
+  transition: color .15s ease;
+}
+
+.landing-nav .nav-link:hover {
+  color: var(--navy);
+}
+
+.landing-actions {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+}
+
+.landing-hero {
+  padding: 4.5rem 0 3rem;
+  text-align: center;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .4rem .95rem;
+  background: var(--teal-soft);
+  border: 1px solid #b7d6ce;
+  border-radius: 20px;
+  font-size: .72rem;
+  font-weight: 700;
+  color: var(--navy);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+.badge-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--teal);
+}
+
+.landing-hero h1 {
+  font-size: clamp(2.1rem, 4.2vw, 3.1rem);
+  font-weight: 700;
+  letter-spacing: -.035em;
+  line-height: 1.15;
+  color: var(--ink);
+  margin: 0 0 1.35rem;
+}
+
+.landing-hero .hero-desc {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin: 0 auto 2.25rem;
+  max-width: 780px;
+}
+
+.hero-cta-group {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.button-lg {
+  min-height: 46px;
+  padding: .65rem 1.45rem;
+  font-size: .9rem;
+}
+
+.hero-learn-more {
+  font-size: .84rem;
+  color: var(--ink-muted);
+  text-decoration: none;
+  font-weight: 600;
+  margin-left: .5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+}
+
+.hero-learn-more:hover {
+  color: var(--navy);
+  text-decoration: underline;
+}
+
+/* Metrics Grid */
+.landing-metrics {
+  margin: 2.5rem 0 4.5rem;
+}
+
+.landing-metrics .metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 20px rgba(23, 35, 43, .04);
+}
+
+.landing-metrics .metric {
+  padding: 1.6rem 1.5rem;
+}
+
+.landing-metrics .metric + .metric {
+  border-left: 1px solid var(--border);
+}
+
+.landing-metrics .metric h3 {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: .74rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.landing-metrics .metric-value {
+  margin: .6rem 0 .2rem;
+  font-size: clamp(1.4rem, 2.5vw, 1.9rem);
+  font-weight: 700;
+  color: var(--navy);
+  letter-spacing: -.03em;
+  line-height: 1.2;
+}
+
+.landing-metrics .metric-detail {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: .78rem;
+}
+
+/* Section Blocks */
+.section-block {
+  padding: 4rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.section-header-center {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 3rem;
+}
+
+.section-header-center h2 {
+  font-size: clamp(1.65rem, 3.2vw, 2.2rem);
+  letter-spacing: -.03em;
+  font-weight: 700;
+  margin: 0 0 .65rem;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+.section-header-center p {
+  color: var(--ink-soft);
+  font-size: .92rem;
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* Feature Cards Grid */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.35rem;
+}
+
+.feature-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.75rem;
+  box-shadow: 0 4px 15px rgba(23, 35, 43, .03);
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.feature-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(23, 35, 43, .07);
+  border-color: var(--border-strong);
+}
+
+.feature-icon {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--teal-soft);
+  color: var(--navy);
+  margin-bottom: 1.15rem;
+}
+
+.feature-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.feature-card h3 {
+  margin: 0 0 .5rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -.02em;
+}
+
+.feature-card p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: .85rem;
+  line-height: 1.55;
+  flex: 1;
+}
+
+.feature-tag {
+  margin-top: 1.25rem;
+  font-size: .72rem;
+  font-weight: 700;
+  color: var(--teal);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+/* Role Architecture Grid */
+.roles-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+.role-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2.25rem 2rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 20px rgba(23, 35, 43, .04);
+}
+
+.role-card-user {
+  border-top: 4px solid var(--teal);
+}
+
+.role-card-admin {
+  border-top: 4px solid var(--navy);
+}
+
+.role-badge {
+  display: inline-block;
+  padding: .25rem .65rem;
+  border-radius: 4px;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  margin-bottom: .85rem;
+  align-self: flex-start;
+}
+
+.role-badge-user {
+  background: var(--teal-soft);
+  color: #28675e;
+  border: 1px solid #b7d6ce;
+}
+
+.role-badge-admin {
+  background: var(--amber-soft);
+  color: #855b1f;
+  border: 1px solid #e7d8be;
+}
+
+.role-card h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 .4rem;
+}
+
+.role-card .role-desc {
+  color: var(--ink-soft);
+  font-size: .86rem;
+  line-height: 1.5;
+  margin: 0 0 1.5rem;
+}
+
+.role-checklist {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.85rem;
+  display: grid;
+  gap: .75rem;
+  flex: 1;
+}
+
+.role-checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: .65rem;
+  font-size: .84rem;
+  color: var(--ink-soft);
+  line-height: 1.45;
+}
+
+.role-checklist svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Governance Banner */
+.governance-banner {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2.25rem;
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  box-shadow: 0 4px 15px rgba(23, 35, 43, .03);
+}
+
+.governance-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  background: var(--teal-soft);
+  display: grid;
+  place-items: center;
+  color: var(--teal);
+  flex-shrink: 0;
+}
+
+.governance-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.governance-content h3 {
+  margin: 0 0 .5rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.governance-content p {
+  margin: 0 0 .75rem;
+  color: var(--ink-soft);
+  font-size: .86rem;
+  line-height: 1.55;
+}
+
+.governance-pills {
+  display: flex;
+  gap: .6rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.gov-pill {
+  font-size: .74rem;
+  padding: .25rem .65rem;
+  background: var(--surface-muted);
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* CTA Card */
+.cta-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 3.5rem 2rem;
+  text-align: center;
+  box-shadow: 0 12px 35px rgba(23, 35, 43, .06);
+  margin: 4rem 0 2rem;
+}
+
+.cta-card h2 {
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 .75rem;
+}
+
+.cta-card p {
+  color: var(--ink-soft);
+  font-size: .95rem;
+  max-width: 600px;
+  margin: 0 auto 2rem;
+}
+
+/* Responsive Overrides */
+@media (max-width: 980px) {
+  .landing-nav {
+    display: none;
+  }
+  .features-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .landing-metrics .metrics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .landing-metrics .metric:nth-child(2n + 1) {
+    border-left: 0;
+  }
+  .landing-metrics .metric:nth-child(n + 3) {
+    border-top: 1px solid var(--border);
+  }
+}
+
+@media (max-width: 680px) {
+  .landing-hero {
+    padding: 2.75rem 0 2rem;
+  }
+  .landing-hero h1 {
+    font-size: 1.95rem;
+  }
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+  .roles-grid {
+    grid-template-columns: 1fr;
+  }
+  .landing-metrics .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+  .landing-metrics .metric + .metric {
+    border-left: 0;
+    border-top: 1px solid var(--border);
+  }
+  .governance-banner {
+    flex-direction: column;
+    padding: 1.5rem;
+  }
+}
